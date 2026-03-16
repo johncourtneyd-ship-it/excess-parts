@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Courtney's Excess Parts</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e14;
+  --surface: #111820;
+  --surface2: #1a2332;
+  --surface3: #1f2a3d;
+  --border: #2a3a52;
+  --border-hi: #3d5470;
+  --accent: #00d4ff;
+  --accent2: #00ff9d;
+  --accent3: #ff6b35;
+  --yellow: #ffd60a;
+  --text: #e8f0f8;
+  --text2: #7a9bb5;
+  --text3: #3d5470;
+  --mono: 'IBM Plex Mono', monospace;
+  --display: 'Syne', sans-serif;
+  --radius: 6px;
+  --glow: 0 0 20px rgba(0,212,255,0.15);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--display);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* GRID BG */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* HEADER */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,14,20,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+.logo span { color: var(--accent); }
+.logo sub {
+  font-size: 0.55rem;
+  font-weight: 400;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-top: -2px;
+}
+.header-right { display: flex; align-items: center; gap: 16px; }
+.db-status {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--accent2);
+  border: 1px solid rgba(0,255,157,0.2);
+  background: rgba(0,255,157,0.05);
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: flex; align-items: center; gap: 6px;
+}
+.db-status::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--accent2);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* HERO SEARCH */
+.hero {
+  position: relative;
+  padding: 64px 32px 48px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.hero-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeUp 0.5s 0.1s forwards;
+}
+.hero h1 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp 0.5s 0.2s forwards;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--accent);
+  position: relative;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(16px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* SEARCH BOX */
+.search-box {
+  position: relative;
+  opacity: 0;
+  animation: fadeUp 0.5s 0.3s forwards;
+}
+.search-inner {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+.search-inner:focus-within {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+.search-inner input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 1rem;
+  padding: 18px 20px;
+  letter-spacing: 1px;
+}
+.search-inner input::placeholder { color: var(--text3); letter-spacing: 0; font-size: 0.85rem; }
+.search-btn {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  font-family: var(--display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 18px 28px;
+  cursor: pointer;
+  transition: background 0.15s;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.search-btn:hover { background: #33ddff; }
+.search-hint {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--text3);
+  margin-top: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.norm-pill {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.2);
+  color: var(--accent);
+  padding: 2px 10px;
+  border-radius: 20px;
+  display: none;
+}
+
+/* STATS */
+.stats-strip {
+  display: flex; gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 32px 0 0;
+  opacity: 0;
+  animation: fadeUp 0.5s 0.4s forwards;
+}
+.stat {
+  flex: 1;
+  background: var(--surface);
+  padding: 16px 20px;
+  text-align: center;
+}
+.stat .n {
+  font-family: var(--mono);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.stat .l {
+  font-size: 0.65rem;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+/* MAIN CONTENT */
+.main { padding: 0 32px 48px; position: relative; z-index: 1; }
+
+/* RESULTS HEADER */
+.results-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+.results-label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.results-label strong { color: var(--accent); font-size: 0.9rem; }
+
+/* TABLE */
+.table-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  overflow-x: auto;
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 900px; }
+thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
+thead th {
+  padding: 11px 14px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+  cursor: pointer;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface2); }
+tbody td { padding: 11px 14px; vertical-align: middle; }
+
+.td-customer {
+  font-weight: 600;
+  font-size: 0.78rem;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.td-date {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: #bc8cff;
+  white-space: nowrap;
+}
+.td-mpn {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+}
+.td-cpn {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: #79c0ff;
+}
+.td-desc {
+  color: var(--text2);
+  font-size: 0.75rem;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.td-mfr { color: var(--text2); font-size: 0.75rem; }
+.td-qty { font-family: var(--mono); font-weight: 600; }
+.td-price {
+  font-family: var(--mono);
+  font-weight: 600;
+  color: var(--accent2);
+}
+.td-price.empty { color: var(--text3); }
+
+/* EDITABLE CELL */
+.editable {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 6px; border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer; transition: all 0.1s;
+}
+.editable:hover { background: var(--surface3); border-color: var(--border); }
+.edit-icon { opacity: 0; font-size: 0.6rem; color: var(--text3); }
+.editable:hover .edit-icon { opacity: 1; }
+.edit-form { display: flex; gap: 4px; align-items: center; }
+.edit-input {
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  outline: none;
+  width: 100px;
+}
+.save-btn {
+  background: var(--accent2); color: var(--bg);
+  border: none; border-radius: 4px;
+  padding: 3px 8px; font-size: 0.68rem; font-weight: 700; cursor: pointer;
+}
+.cancel-btn {
+  background: transparent; color: var(--text2);
+  border: 1px solid var(--border);
+  border-radius: 4px; padding: 3px 7px; font-size: 0.68rem; cursor: pointer;
+}
+
+/* PAGINATION */
+.pagination {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-top: 20px;
+}
+.page-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.page-btn:hover { border-color: var(--accent); color: var(--accent); }
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.page-info {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text3);
+}
+
+/* STATE BOXES */
+.state-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 60px 40px;
+  text-align: center;
+}
+.state-box h3 { font-size: 1rem; color: var(--text2); margin-bottom: 8px; }
+.state-box p { font-size: 0.8rem; color: var(--text3); line-height: 1.6; }
+.spinner {
+  width: 28px; height: 28px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto 14px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* DETAIL MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%; max-width: 600px;
+  max-height: 90vh; overflow-y: auto;
+  transform: translateY(20px);
+  transition: transform 0.2s;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-header h2 {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+.modal-close {
+  background: transparent; border: none;
+  color: var(--text3); font-size: 1.2rem;
+  cursor: pointer; padding: 4px 8px;
+}
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 24px; }
+.field-row {
+  display: flex; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.field-row:last-child { border-bottom: none; }
+.field-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  width: 130px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.field-value {
+  font-size: 0.82rem;
+  color: var(--text);
+  flex: 1;
+  word-break: break-all;
+}
+.field-value.mono { font-family: var(--mono); color: var(--accent); }
+.field-value.price { font-family: var(--mono); color: var(--accent2); font-weight: 600; }
+
+/* EDIT IN MODAL */
+.modal-edit-row {
+  display: flex; gap: 8px; align-items: center; margin-top: 4px;
+}
+.modal-edit-row input {
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  border-radius: 4px;
+  outline: none;
+  flex: 1;
+}
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.8rem;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  transform: translateY(80px); opacity: 0;
+  transition: all 0.25s;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 3px solid var(--accent2); }
+.toast.error { border-left: 3px solid var(--accent3); }
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">
+    excess<span>/db</span>
+    <sub>Parts Intelligence</sub>
+  </div>
+  <div class="header-right">
+    <div class="db-status" id="db-status">Connected</div>
+  </div>
+</header>
+
+<!-- HERO / SEARCH -->
+<div class="hero">
+  <div class="hero-label">Excess Inventory Search</div>
+  <h1>Find any part across<br><em>all customer lists</em></h1>
+
+  <div class="search-box">
+    <div class="search-inner">
+      <input type="text" id="search-input"
+        placeholder="Enter MPN or Customer Part Number..."
+        autocomplete="off" spellcheck="false"
+        oninput="onInput()" onkeydown="if(event.key==='Enter')doSearch()" />
+      <button class="search-btn" onclick="doSearch()">Search</button>
+    </div>
+    <div class="search-hint">
+      Special characters stripped automatically &nbsp;·&nbsp;
+      <span class="norm-pill" id="norm-pill"></span>
+    </div>
+  </div>
+
+  <div class="stats-strip" id="stats-strip" style="display:none">
+    <div class="stat"><div class="n" id="stat-count">—</div><div class="l">Results</div></div>
+    <div class="stat"><div class="n" id="stat-customers">—</div><div class="l">Customer Lists</div></div>
+    <div class="stat"><div class="n" id="stat-qty">—</div><div class="l">Total Qty</div></div>
+    <div class="stat"><div class="n" id="stat-price">—</div><div class="l">Avg Price</div></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="main-content">
+  <div class="state-box" id="welcome-box">
+    <h3 style="color:var(--text)">Ready to search</h3>
+    <p>Enter any part number above.<br>
+    Dashes and special characters are stripped automatically — just type the number.</p>
+  </div>
+  <div class="state-box hidden" id="loading-box">
+    <div class="spinner"></div>
+    <h3>Searching...</h3>
+  </div>
+  <div class="state-box hidden" id="no-results-box">
+    <h3>No results found</h3>
+    <p id="no-results-msg"></p>
+  </div>
+  <div id="results-section" class="hidden">
+    <div class="results-header">
+      <div class="results-label">Results for <strong id="results-term"></strong></div>
+      <div class="results-label" id="results-page-info"></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>MPN</th>
+            <th>Customer P/N</th>
+            <th>Description</th>
+            <th>Manufacturer</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="results-tbody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">PART DETAIL</h2>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://excess-data.bubbleapps.io/version-test/api/1.1/obj/excesspart';
+const API_KEY  = 'cf121986fa4afe2b1b18afb0eacad703';
+const PAGE_SIZE = 25;
+
+let currentResults = [];
+let currentPage = 1;
+let currentNorm = '';
+let totalCount = 0;
+let overrides = {};
+
+// Load saved overrides
+try { overrides = JSON.parse(localStorage.getItem('excess_ov_v2') || '{}'); } catch(e){}
+
+function saveOverrides() {
+  try { localStorage.setItem('excess_ov_v2', JSON.stringify(overrides)); } catch(e){}
+}
+
+function norm(v) { return v.replace(/[^a-zA-Z0-9]/g,'').toUpperCase(); }
+
+function onInput() {
+  const raw = document.getElementById('search-input').value.trim();
+  const pill = document.getElementById('norm-pill');
+  if (!raw) { pill.style.display='none'; return; }
+  const n = norm(raw);
+  if (n !== raw.toUpperCase()) {
+    pill.style.display='inline-block';
+    pill.textContent = '→ ' + n;
+  } else {
+    pill.style.display='none';
+  }
+}
+
+async function doSearch() {
+  const raw = document.getElementById('search-input').value.trim();
+  if (!raw) return;
+  const n = norm(raw);
+  currentNorm = n;
+  currentPage = 1;
+
+  showState('loading');
+
+  try {
+    // Search by normalized_pn (MPN) OR customer_pn
+    // Bubble API: search with constraints
+    // Search by normalized_pn first
+    const constraints1 = JSON.stringify([{ key: 'normalized_mpn_text', constraint_type: 'text contains', value: n }]);
+    const url1 = `${API_BASE}?api_token=${API_KEY}&constraints=${encodeURIComponent(constraints1)}&limit=100&cursor=0`;
+    
+    console.log('Calling URL:', url1);
+    const res = await fetch(url1);
+
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    const data = await res.json();
+    console.log('API Response:', JSON.stringify(data).substring(0, 500));
+    let results = data.response?.results || [];
+
+    // Also search customer_pn if no results
+    if (results.length === 0) {
+      const constraints2 = JSON.stringify([{ key: 'customer_pn_text', constraint_type: 'text contains', value: n }]);
+      const url2 = `${API_BASE}?api_token=${API_KEY}&constraints=${encodeURIComponent(constraints2)}&limit=100&cursor=0`;
+      const res2 = await fetch(url2);
+      if (res2.ok) {
+        const data2 = await res2.json();
+        results = data2.response?.results || [];
+      }
+    }
+
+    // Apply overrides
+    results = results.map(r => {
+      const key = r._id;
+      const ov = overrides[key];
+      return ov ? {...r, price: ov.price ?? r['Price'], list_date: ov.date ?? r['List Date'], _modified: true} : r;
+    });
+
+    currentResults = results;
+    totalCount = results.length;
+
+    if (results.length === 0) {
+      showState('no-results');
+      document.getElementById('no-results-msg').textContent =
+        `"${n}" was not found in any customer excess list.`;
+      return;
+    }
+
+    renderResults();
+    renderStats();
+    showState('results');
+
+  } catch(e) {
+    showState('no-results');
+    document.getElementById('no-results-msg').textContent = 'Error connecting to database: ' + e.message;
+  }
+}
+
+function renderResults() {
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page = currentResults.slice(start, start + PAGE_SIZE);
+  const tbody = document.getElementById('results-tbody');
+
+  document.getElementById('results-term').textContent = currentNorm;
+  document.getElementById('results-page-info').textContent =
+    `${start+1}–${Math.min(start+PAGE_SIZE, totalCount)} of ${totalCount}`;
+
+  tbody.innerHTML = page.map(r => {
+    const price = overrides[r._id]?.price ?? r['Price'] ?? '';
+    const date = overrides[r._id]?.date ?? r['List Date'] ?? '';
+    const modBadge = r._modified ? ' <span style="font-size:0.55rem;color:var(--yellow);vertical-align:middle">✦</span>' : '';
+
+    return `<tr onclick="openModal('${r._id}')">
+      <td class="td-customer" title="${r['Customer']||''}">${r['Customer']||'—'}</td>
+      <td class="td-mpn">${r['Original MPN']||'—'}</td>
+      <td class="td-cpn">${r['Customer PN']||'—'}</td>
+      <td class="td-desc" title="${r['Description']||''}">${r['Description']||'—'}</td>
+      <td class="td-mfr">${r['Manufacturer']||'—'}</td>
+      <td class="td-qty">${r['Quantity']||'—'}</td>
+      <td>
+        <span class="editable td-price${price?'':' empty'}"
+          onclick="event.stopPropagation();startEditPrice(event,'${r._id}','${(price||'').replace(/'/g,"\'")}')">
+          ${price ? '$'+price : '—'} <span class="edit-icon">✎</span>
+        </span>${modBadge}
+      </td>
+      <td>
+        <span class="editable td-date"
+          onclick="event.stopPropagation();startEditDate(event,'${r._id}','${(date||'').replace(/'/g,"\'")}')">
+          ${date||'—'} <span class="edit-icon">✎</span>
+        </span>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Pagination
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+  const pag = document.getElementById('pagination');
+  if (totalPages <= 1) { pag.innerHTML=''; return; }
+  pag.innerHTML = `
+    <button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>← Prev</button>
+    <span class="page-info">Page ${currentPage} of ${totalPages}</span>
+    <button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>Next →</button>`;
+}
+
+function goPage(p) {
+  currentPage = p;
+  renderResults();
+  document.querySelector('.table-wrap')?.scrollIntoView({behavior:'smooth'});
+}
+
+function renderStats() {
+  const strip = document.getElementById('stats-strip');
+  strip.style.display = 'flex';
+  document.getElementById('stat-count').textContent = totalCount.toLocaleString();
+  const customers = [...new Set(currentResults.map(r=>r['Customer']))].length;
+  document.getElementById('stat-customers').textContent = customers;
+  const qty = currentResults.reduce((a,r)=>{const q=parseFloat(r['Quantity']);return a+(isNaN(q)?0:q);},0);
+  document.getElementById('stat-qty').textContent = qty>0 ? qty.toLocaleString() : '—';
+  const prices = currentResults.map(r=>parseFloat(overrides[r._id]?.price??r['Price'])).filter(p=>!isNaN(p));
+  const avg = prices.length ? (prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2) : '—';
+  document.getElementById('stat-price').textContent = avg !== '—' ? '$'+avg : '—';
+}
+
+function showState(s) {
+  ['welcome-box','loading-box','no-results-box','results-section'].forEach(id=>{
+    document.getElementById(id).classList.add('hidden');
+  });
+  const map = {welcome:'welcome-box',loading:'loading-box','no-results':'no-results-box',results:'results-section'};
+  document.getElementById(map[s])?.classList.remove('hidden');
+}
+
+// INLINE EDIT
+function startEditPrice(e, id, current) {
+  const span = e.target.closest('.editable');
+  span.outerHTML = `<span class="edit-form">
+    <input class="edit-input" id="ei-${id}" value="${current}" placeholder="e.g. 12.50"
+      onkeydown="if(event.key==='Enter')saveEdit('${id}','price');if(event.key==='Escape')renderResults()" />
+    <button class="save-btn" onclick="saveEdit('${id}','price')">✓</button>
+    <button class="cancel-btn" onclick="renderResults()">✕</button>
+  </span>`;
+  document.getElementById('ei-'+id)?.focus();
+}
+
+function startEditDate(e, id, current) {
+  const span = e.target.closest('.editable');
+  span.outerHTML = `<span class="edit-form">
+    <input class="edit-input" id="ei-${id}" value="${current}" placeholder="YYYY-MM"
+      onkeydown="if(event.key==='Enter')saveEdit('${id}','date');if(event.key==='Escape')renderResults()" />
+    <button class="save-btn" onclick="saveEdit('${id}','date')">✓</button>
+    <button class="cancel-btn" onclick="renderResults()">✕</button>
+  </span>`;
+  document.getElementById('ei-'+id)?.focus();
+}
+
+function saveEdit(id, field) {
+  const val = document.getElementById('ei-'+id)?.value?.trim() || '';
+  if (!overrides[id]) overrides[id] = {};
+  overrides[id][field === 'price' ? 'price' : 'date'] = val;
+  overrides[id].modifiedAt = new Date().toLocaleString();
+
+  // Also update in currentResults
+  const r = currentResults.find(x=>x._id===id);
+  if (r) r._modified = true;
+
+  saveOverrides();
+  renderResults();
+  showToast(field==='price' ? 'Price saved ✓' : 'Date updated ✓', 'success');
+}
+
+// MODAL
+function openModal(id) {
+  const r = currentResults.find(x=>x._id===id);
+  if (!r) return;
+  const price = overrides[id]?.price ?? r['Price'] ?? '';
+  const date  = overrides[id]?.date  ?? r['List Date'] ?? '';
+
+  document.getElementById('modal-title').textContent = r['Normalized MPN'] || r['Original MPN'] || 'PART DETAIL';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="field-row"><div class="field-label">Customer</div><div class="field-value">${r['Customer']||'—'}</div></div>
+    <div class="field-row"><div class="field-label">MPN</div><div class="field-value mono">${r['Original MPN']||'—'}</div></div>
+    <div class="field-row"><div class="field-label">Customer P/N</div><div class="field-value mono">${r['Customer PN']||'—'}</div></div>
+    <div class="field-row"><div class="field-label">Normalized P/N</div><div class="field-value mono">${r['Normalized MPN']||'—'}</div></div>
+    <div class="field-row"><div class="field-label">Description</div><div class="field-value">${r['Description']||'—'}</div></div>
+    <div class="field-row"><div class="field-label">Manufacturer</div><div class="field-value">${r['Manufacturer']||'—'}</div></div>
+    <div class="field-row"><div class="field-label">Quantity</div><div class="field-value">${r['Quantity']||'—'}</div></div>
+    <div class="field-row">
+      <div class="field-label">Price (USD)</div>
+      <div class="field-value">
+        <div class="modal-edit-row">
+          <input id="modal-price-${id}" value="${price}" placeholder="Enter price…" />
+          <button class="save-btn" onclick="saveModalEdit('${id}','price')">Save</button>
+        </div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">List Date</div>
+      <div class="field-value">
+        <div class="modal-edit-row">
+          <input id="modal-date-${id}" value="${date}" placeholder="YYYY-MM" />
+          <button class="save-btn" onclick="saveModalEdit('${id}','date')">Save</button>
+        </div>
+      </div>
+    </div>
+    <div class="field-row"><div class="field-label">Email</div><div class="field-value">${r['Customer Email']||'—'}</div></div>
+    ${r._modified ? '<div class="field-row"><div class="field-label">Last Edited</div><div class="field-value" style="color:var(--yellow);font-size:0.72rem">'+overrides[id]?.modifiedAt+'</div></div>' : ''}
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function saveModalEdit(id, field) {
+  const inputId = field==='price' ? `modal-price-${id}` : `modal-date-${id}`;
+  const val = document.getElementById(inputId)?.value?.trim() || '';
+  if (!overrides[id]) overrides[id] = {};
+  overrides[id][field==='price'?'price':'date'] = val;
+  overrides[id].modifiedAt = new Date().toLocaleString();
+  const r = currentResults.find(x=>x._id===id);
+  if (r) r._modified = true;
+  saveOverrides();
+  renderResults();
+  showToast(field==='price' ? 'Price saved ✓' : 'Date updated ✓', 'success');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+// TOAST
+let toastTimer;
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// ESC to close modal
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModalDirect(); });
+</script>
+</body>
+</html>
