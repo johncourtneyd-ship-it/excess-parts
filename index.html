@@ -290,7 +290,12 @@ tbody td{padding:9px 12px;vertical-align:middle;}
       <div style="flex:1;min-width:300px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div class="pag-info" style="font-size:0.75rem;color:var(--text2);">Recent Demand Requests</div>
-          <button class="btn-ghost" style="padding:5px 12px;font-size:0.72rem;" onclick="loadDemand()">↻ Refresh</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-ghost" style="padding:5px 12px;font-size:0.72rem;" onclick="downloadDemandTemplate()">⬇ Template</button>
+            <button class="btn-ghost" style="padding:5px 12px;font-size:0.72rem;" onclick="document.getElementById('demand-file').click()">📤 Upload List</button>
+            <input type="file" id="demand-file" accept=".csv" style="display:none" onchange="handleDemandUpload(event)" />
+            <button class="btn-ghost" style="padding:5px 12px;font-size:0.72rem;" onclick="loadDemand()">↻ Refresh</button>
+          </div>
         </div>
         <div id="demand-list">
           <div class="state-box"><h3>No requests yet</h3><p>Log your first demand request using the form.</p></div>
@@ -349,7 +354,12 @@ tbody td{padding:9px 12px;vertical-align:middle;}
       <div style="flex:1;min-width:300px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div class="pag-info" style="font-size:0.75rem;color:var(--text2);">Recent Part Intel</div>
-          <button class="btn-ghost" style="padding:5px 12px;font-size:0.72rem;" onclick="loadIntel()">↻ Refresh</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-ghost" style="padding:5px 12px;font-size:0.72rem;" onclick="downloadIntelTemplate()">⬇ Template</button>
+            <button class="btn-ghost" style="padding:5px 12px;font-size:0.72rem;" onclick="document.getElementById('intel-file').click()">📤 Upload List</button>
+            <input type="file" id="intel-file" accept=".csv" style="display:none" onchange="handleIntelUpload(event)" />
+            <button class="btn-ghost" style="padding:5px 12px;font-size:0.72rem;" onclick="loadIntel()">↻ Refresh</button>
+          </div>
         </div>
         <div id="intel-list">
           <div class="state-box"><h3>No intel yet</h3><p>Log your first part intel using the form.</p></div>
@@ -900,6 +910,126 @@ function closeModal(e){ if(e.target===document.getElementById('modal-overlay')) 
 function closeModalDirect(){ document.getElementById('modal-overlay').classList.remove('open'); }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModalDirect(); });
 
+
+
+// ── BULK UPLOAD DEMAND ────────────────────────────────────────────────────
+function downloadDemandTemplate(){
+  const headers = 'customer,email,mpn,customer_pn,manufacturer,description,quantity_needed,target_price,date_received,status,notes';
+  const example = 'Acme Corp,buyer@acme.com,SFP-10G-LR-X-AX,ACME-001,Axiom,SINGLEMODE FIBER 10GIG,500,25.00,2026-03,Open,Urgent need';
+  const csv = headers + '\n' + example;
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'demand_template.csv';
+  a.click();
+  showToast('Demand template downloaded ✓','success');
+}
+
+function handleDemandUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(ev){
+    const lines = ev.target.result.split('\n').filter(l=>l.trim());
+    if(lines.length < 2){showToast('File appears empty','error');return;}
+    const headers = lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+    const rows = lines.slice(1).map(line=>{
+      const vals = line.split(',').map(v=>v.trim().replace(/^"|"$/g,''));
+      const obj = {};
+      headers.forEach((h,i)=>obj[h]=vals[i]||'');
+      return obj;
+    }).filter(r=>Object.values(r).some(v=>v));
+
+    if(!rows.length){showToast('No data rows found','error');return;}
+
+    const records = rows.map(r=>({
+      customer: r.customer||'',
+      email: r.email||'',
+      mpn: r.mpn||'',
+      normalized_pn: (r.mpn||r.customer_pn||'').replace(/[^a-zA-Z0-9]/g,'').toUpperCase(),
+      customer_pn: r.customer_pn||'',
+      manufacturer: r.manufacturer||'',
+      description: r.description||'',
+      quantity_needed: r.quantity_needed||'',
+      target_price: r.target_price||'',
+      date_received: r.date_received || new Date().toISOString().slice(0,10),
+      status: r.status||'Open',
+      notes: r.notes||'',
+    }));
+
+    try {
+      const batchSize = 500;
+      let imported = 0;
+      for(let i=0;i<records.length;i+=batchSize){
+        const res = await api('demand',{method:'POST',body:records.slice(i,i+batchSize),prefer:'return=minimal'});
+        if(!res.ok) throw new Error(await res.text());
+        imported += Math.min(batchSize, records.length-i);
+      }
+      showToast(`✓ ${imported} demand records imported!`,'success');
+      loadDemand();
+    } catch(e){ showToast('Import failed: '+e.message,'error'); }
+    document.getElementById('demand-file').value='';
+  };
+  reader.readAsText(file);
+}
+
+// ── BULK UPLOAD INTEL ─────────────────────────────────────────────────────
+function downloadIntelTemplate(){
+  const headers = 'source,email,mpn,customer_pn,manufacturer,description,date_received,notes';
+  const example = 'Acme Corp,contact@acme.com,SFP-10G-LR-X-AX,ACME-001,Axiom,SINGLEMODE FIBER 10GIG,2026-03,FYI only';
+  const csv = headers + '\n' + example;
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'part_intel_template.csv';
+  a.click();
+  showToast('Part Intel template downloaded ✓','success');
+}
+
+function handleIntelUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(ev){
+    const lines = ev.target.result.split('\n').filter(l=>l.trim());
+    if(lines.length < 2){showToast('File appears empty','error');return;}
+    const headers = lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+    const rows = lines.slice(1).map(line=>{
+      const vals = line.split(',').map(v=>v.trim().replace(/^"|"$/g,''));
+      const obj = {};
+      headers.forEach((h,i)=>obj[h]=vals[i]||'');
+      return obj;
+    }).filter(r=>Object.values(r).some(v=>v));
+
+    if(!rows.length){showToast('No data rows found','error');return;}
+
+    const records = rows.map(r=>({
+      source: r.source||'',
+      email: r.email||'',
+      mpn: r.mpn||'',
+      normalized_pn: (r.mpn||r.customer_pn||'').replace(/[^a-zA-Z0-9]/g,'').toUpperCase(),
+      customer_pn: r.customer_pn||'',
+      manufacturer: r.manufacturer||'',
+      description: r.description||'',
+      date_received: r.date_received || new Date().toISOString().slice(0,10),
+      notes: r.notes||'',
+    }));
+
+    try {
+      const batchSize = 500;
+      let imported = 0;
+      for(let i=0;i<records.length;i+=batchSize){
+        const res = await api('part_intel',{method:'POST',body:records.slice(i,i+batchSize),prefer:'return=minimal'});
+        if(!res.ok) throw new Error(await res.text());
+        imported += Math.min(batchSize, records.length-i);
+      }
+      showToast(`✓ ${imported} intel records imported!`,'success');
+      loadIntel();
+    } catch(e){ showToast('Import failed: '+e.message,'error'); }
+    document.getElementById('intel-file').value='';
+  };
+  reader.readAsText(file);
+}
 
 // ── UPLOAD ────────────────────────────────────────────────────────────────
 let uploadRows = [];
