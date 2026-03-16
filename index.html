@@ -165,7 +165,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">excess<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.34</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.36</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -512,21 +512,20 @@ let searchResults = [], searchPage = 1, searchTerm = '';
 // ── INIT ──────────────────────────────────────────────────────────────────
 async function loadCount(){
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/excess_parts?select=id`, {
+    const res = await fetch(`${SUPA_URL}/rest/v1/excess_parts?select=id&limit=1`, {
       headers: {
         'apikey': KEY,
         'Authorization': `Bearer ${KEY}`,
-        'Prefer': 'count=exact',
-        'Range-Unit': 'items',
-        'Range': '0-0'
+        'Prefer': 'count=exact'
       }
     });
     const range = res.headers.get('content-range');
-    if(range && range.includes('/')) {
-      const count = range.split('/')[1];
-      if(count && count !== '*') {
+    if(range) {
+      const parts = range.split('/');
+      const total = parts[parts.length-1];
+      if(total && total !== '*' && !isNaN(parseInt(total))) {
         document.getElementById('db-pill').textContent = 
-          `Connected · ${parseInt(count).toLocaleString()} records`;
+          `Connected · ${parseInt(total).toLocaleString()} records`;
         return;
       }
     }
@@ -1089,8 +1088,9 @@ function handleIntelUpload(e){
       loadIntel();
     } catch(e){ showToast('Import failed: '+e.message,'error'); }
     document.getElementById('intel-file').value='';
-  };
-  reader.readAsText(file);
+    },
+    error: function(e){ showToast('Error reading file: '+e.message,'error'); }
+  });
 }
 
 // ── UPLOAD ────────────────────────────────────────────────────────────────
