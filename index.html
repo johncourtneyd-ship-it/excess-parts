@@ -165,7 +165,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">excess<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.33</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.34</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -512,20 +512,25 @@ let searchResults = [], searchPage = 1, searchTerm = '';
 // ── INIT ──────────────────────────────────────────────────────────────────
 async function loadCount(){
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/excess_parts?select=id&limit=1`, {
+    const res = await fetch(`${SUPA_URL}/rest/v1/excess_parts?select=id`, {
       headers: {
-        'apikey': KEY, 'Authorization': `Bearer ${KEY}`,
-        'Prefer': 'count=exact'
+        'apikey': KEY,
+        'Authorization': `Bearer ${KEY}`,
+        'Prefer': 'count=exact',
+        'Range-Unit': 'items',
+        'Range': '0-0'
       }
     });
     const range = res.headers.get('content-range');
-    const count = range ? range.split('/')[1] : null;
-    if(count && count !== '*') {
-      document.getElementById('db-pill').textContent = 
-        `Connected · ${parseInt(count).toLocaleString()} records`;
-    } else {
-      document.getElementById('db-pill').textContent = 'Connected';
+    if(range && range.includes('/')) {
+      const count = range.split('/')[1];
+      if(count && count !== '*') {
+        document.getElementById('db-pill').textContent = 
+          `Connected · ${parseInt(count).toLocaleString()} records`;
+        return;
+      }
     }
+    document.getElementById('db-pill').textContent = 'Connected';
   } catch(e){
     document.getElementById('db-pill').textContent = 'Connected';
   }
