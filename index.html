@@ -165,7 +165,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">excess<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.30</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.31</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -1006,17 +1006,11 @@ function downloadIntelTemplate(){
 function handleIntelUpload(e){
   const file = e.target.files[0];
   if(!file) return;
-  const reader = new FileReader();
-  reader.onload = async function(ev){
-    const lines = ev.target.result.split('\n').filter(l=>l.trim());
-    if(lines.length < 2){showToast('File appears empty','error');return;}
-    const headers = lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
-    const rows = lines.slice(1).map(line=>{
-      const vals = line.split(',').map(v=>v.trim().replace(/^"|"$/g,''));
-      const obj = {};
-      headers.forEach((h,i)=>obj[h]=vals[i]||'');
-      return obj;
-    }).filter(r=>Object.values(r).some(v=>v));
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: async function(results){
+    const rows = results.data;
 
     if(!rows.length){showToast('No data rows found','error');return;}
 
