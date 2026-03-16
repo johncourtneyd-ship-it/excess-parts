@@ -633,7 +633,7 @@ async function doSearch() {
     // Search by normalized_pn (MPN) OR customer_pn
     // Bubble API: search with constraints
     // Search by normalized_pn first
-    const constraints1 = JSON.stringify([{ key: 'normalized_mpn_text', constraint_type: 'text contains', value: n }]);
+    const constraints1 = JSON.stringify([{ key: 'normalized_mpn_text', constraint_type: 'contains keyword', value: n }]);
     const url1 = `${API_BASE}?api_token=${API_KEY}&constraints=${encodeURIComponent(constraints1)}&limit=100&cursor=0`;
     
     console.log('Calling URL:', url1);
@@ -646,7 +646,7 @@ async function doSearch() {
 
     // Also search customer_pn if no results
     if (results.length === 0) {
-      const constraints2 = JSON.stringify([{ key: 'customer_pn_text', constraint_type: 'text contains', value: n }]);
+      const constraints2 = JSON.stringify([{ key: 'customer_pn_text', constraint_type: 'contains keyword', value: n }]);
       const url2 = `${API_BASE}?api_token=${API_KEY}&constraints=${encodeURIComponent(constraints2)}&limit=100&cursor=0`;
       const res2 = await fetch(url2);
       if (res2.ok) {
