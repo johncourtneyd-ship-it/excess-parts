@@ -165,7 +165,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">excess<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.31</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.33</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -194,7 +194,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
     <div id="search-stats" class="stats-row hidden">
       <div class="stat"><div class="n" id="ss-count">—</div><div class="l">Results</div></div>
-      <div class="stat"><div class="n" id="ss-customers">—</div><div class="l">Customer Lists</div></div>
+      <div class="stat"><div class="n" id="ss-customers" style="font-size:0.75rem;">—</div><div class="l">By Source</div></div>
       <div class="stat"><div class="n" id="ss-qty">—</div><div class="l">Total Qty</div></div>
       <div class="stat"><div class="n" id="ss-price">—</div><div class="l">Avg Price</div></div>
     </div>
@@ -214,8 +214,8 @@ tbody td{padding:9px 12px;vertical-align:middle;}
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Customer</th><th>MPN</th><th>Customer P/N</th><th>Description</th>
-            <th>Manufacturer</th><th>Qty</th><th>Price</th><th>Date</th><th>Email</th>
+            <th>Source</th><th>Customer</th><th>MPN</th><th>Customer P/N</th><th>Description</th>
+            <th>Manufacturer</th><th>Qty</th><th>Price / Target</th><th>Date</th><th>Email</th>
           </tr></thead>
           <tbody id="search-tbody"></tbody>
         </table>
@@ -512,16 +512,23 @@ let searchResults = [], searchPage = 1, searchTerm = '';
 // ── INIT ──────────────────────────────────────────────────────────────────
 async function loadCount(){
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/excess_parts?select=id`, {
+    const res = await fetch(`${SUPA_URL}/rest/v1/excess_parts?select=id&limit=1`, {
       headers: {
         'apikey': KEY, 'Authorization': `Bearer ${KEY}`,
-        'Prefer': 'count=exact', 'Range': '0-0'
+        'Prefer': 'count=exact'
       }
     });
-    const count = res.headers.get('content-range')?.split('/')[1];
-    if(count) document.getElementById('db-pill').textContent = 
-      `Connected · ${parseInt(count).toLocaleString()} records`;
-  } catch(e){}
+    const range = res.headers.get('content-range');
+    const count = range ? range.split('/')[1] : null;
+    if(count && count !== '*') {
+      document.getElementById('db-pill').textContent = 
+        `Connected · ${parseInt(count).toLocaleString()} records`;
+    } else {
+      document.getElementById('db-pill').textContent = 'Connected';
+    }
+  } catch(e){
+    document.getElementById('db-pill').textContent = 'Connected';
+  }
 }
 document.addEventListener('DOMContentLoaded', loadCount);
 
@@ -581,32 +588,44 @@ async function doSearch(){
 
   try {
     const n = norm(raw);
-    // Search normalized_pn with partial match
-    let res = await api('excess_parts', {
-      query: `?normalized_pn=ilike.*${encodeURIComponent(n)}*&order=customer.asc&limit=500`
-    });
-    let data = await res.json();
 
-    // Fallback: search mpn with raw input
-    if(!data.length){
-      res = await api('excess_parts', {
-        query: `?mpn=ilike.*${encodeURIComponent(raw)}*&order=customer.asc&limit=500`
-      });
-      data = await res.json();
+    // Search all three tables in parallel
+    const [excessRes, demandRes, intelRes] = await Promise.all([
+      api('excess_parts', {query: `?normalized_pn=ilike.*${encodeURIComponent(n)}*&order=customer.asc&limit=300`}),
+      api('demand', {query: `?normalized_pn=ilike.*${encodeURIComponent(n)}*&order=created_at.desc&limit=100`}),
+      api('part_intel', {query: `?normalized_pn=ilike.*${encodeURIComponent(n)}*&order=created_at.desc&limit=100`})
+    ]);
+
+    let excessData = await excessRes.json();
+    let demandData = await demandRes.json();
+    let intelData  = await intelRes.json();
+
+    // Fallback searches if no results
+    if(!excessData.length){
+      const r = await api('excess_parts', {query: `?mpn=ilike.*${encodeURIComponent(raw)}*&order=customer.asc&limit=300`});
+      excessData = await r.json();
+    }
+    if(!demandData.length){
+      const r = await api('demand', {query: `?mpn=ilike.*${encodeURIComponent(raw)}*&order=created_at.desc&limit=100`});
+      demandData = await r.json();
+    }
+    if(!intelData.length){
+      const r = await api('part_intel', {query: `?mpn=ilike.*${encodeURIComponent(raw)}*&order=created_at.desc&limit=100`});
+      intelData = await r.json();
     }
 
-    // Fallback: search customer_pn
-    if(!data.length){
-      res = await api('excess_parts', {
-        query: `?customer_pn=ilike.*${encodeURIComponent(raw)}*&order=customer.asc&limit=500`
-      });
-      data = await res.json();
-    }
+    // Tag each result with its source
+    const tagged = [
+      ...excessData.map(r=>({...r, _source:'excess'})),
+      ...demandData.map(r=>({...r, _source:'demand'})),
+      ...intelData.map(r=>({...r, _source:'intel'}))
+    ];
 
-    searchResults = data;
-    if(!data.length){
+    searchResults = tagged;
+
+    if(!tagged.length){
       showSearchState('empty');
-      document.getElementById('search-empty-msg').textContent = `"${n}" not found in any customer excess list.`;
+      document.getElementById('search-empty-msg').textContent = `"${n}" not found in excess, demand, or part intel.`;
       document.getElementById('search-stats').classList.add('hidden');
       return;
     }
@@ -627,28 +646,50 @@ function renderSearch(){
     `${start+1}–${Math.min(start+PAGE,searchResults.length)} of ${searchResults.length}`;
 
   document.getElementById('search-tbody').innerHTML = page.map(r => {
-    const price = r.price||'';
+    const src = r._source || 'excess';
+    const srcBadge = {
+      excess: '<span style="font-family:var(--mono);font-size:0.58rem;background:rgba(0,212,255,0.1);color:var(--accent);border:1px solid rgba(0,212,255,0.2);padding:2px 6px;border-radius:10px;">EXCESS</span>',
+      demand: '<span style="font-family:var(--mono);font-size:0.58rem;background:rgba(255,214,10,0.1);color:var(--yellow);border:1px solid rgba(255,214,10,0.2);padding:2px 6px;border-radius:10px;">DEMAND</span>',
+      intel:  '<span style="font-family:var(--mono);font-size:0.58rem;background:rgba(188,140,255,0.1);color:var(--purple);border:1px solid rgba(188,140,255,0.2);padding:2px 6px;border-radius:10px;">INTEL</span>'
+    }[src];
+
+    // Get right fields per source
+    const customer = r.customer || r.source || '—';
+    const mpn = r.mpn || '—';
+    const cpn = r.customer_pn || '—';
+    const desc = r.description || '—';
+    const mfr = r.manufacturer || '—';
+    const qty = src==='demand' ? (r.quantity_needed||'—') : (r.quantity||'—');
+    const price = src==='demand' ? (r.target_price||'') : (r.price||'');
+    const date = src==='excess' ? (r.list_date||'—') : (r.date_received||'—');
+    const email = r.email || '—';
     const dot = r.price_updated ? '<span class="edited-dot" title="Price edited"></span>' : '';
-    return `<tr onclick="openSearchModal(${r.id})">
-      <td class="td-bold td-clip" title="${r.customer||''}">${r.customer||'—'}</td>
-      <td class="td-mono td-accent td-clip-sm">${r.mpn||'—'}</td>
-      <td class="td-mono td-blue td-clip-sm">${r.customer_pn||'—'}</td>
-      <td class="td-muted td-clip" title="${r.description||''}">${r.description||'—'}</td>
-      <td class="td-muted td-clip-sm">${r.manufacturer||'—'}</td>
-      <td class="td-mono td-bold">${r.quantity||'—'}</td>
-      <td>
-        <span class="editable td-mono ${price?'td-green':''}"
-          onclick="event.stopPropagation();startEditPrice(event,${r.id},'${(price||'').replace(/'/g,"\'")}')">
-          ${price?'$'+price:'—'} <span class="pencil">✎</span>
-        </span>${dot}
-      </td>
-      <td>
-        <span class="editable td-mono td-purple"
-          onclick="event.stopPropagation();startEditDate(event,${r.id},'${(r.list_date||'').replace(/'/g,"\'")}')">
-          ${r.list_date||'—'} <span class="pencil">✎</span>
-        </span>
-      </td>
-      <td class="td-muted" style="font-size:0.68rem;">${r.email||'—'}</td>
+
+    const priceCell = src==='excess' ? `
+      <span class="editable td-mono ${price?'td-green':''}"
+        onclick="event.stopPropagation();startEditPrice(event,${r.id},'${(price||'').replace(/'/g,"\'")}')">
+        ${price?'$'+price:'—'} <span class="pencil">✎</span>
+      </span>${dot}` 
+      : `<span class="td-mono ${price?'td-green':''}">${price?'$'+price:'—'}</span>`;
+
+    const dateCell = src==='excess' ? `
+      <span class="editable td-mono td-purple"
+        onclick="event.stopPropagation();startEditDate(event,${r.id},'${(date||'').replace(/'/g,"\'")}')">
+        ${date} <span class="pencil">✎</span>
+      </span>`
+      : `<span class="td-mono td-purple">${date}</span>`;
+
+    return `<tr onclick="openSearchModal(${r.id}, '${src}')">
+      <td>${srcBadge}</td>
+      <td class="td-bold td-clip" title="${customer}">${customer}</td>
+      <td class="td-mono td-accent td-clip-sm">${mpn}</td>
+      <td class="td-mono td-blue td-clip-sm">${cpn}</td>
+      <td class="td-muted td-clip" title="${desc}">${desc}</td>
+      <td class="td-muted td-clip-sm">${mfr}</td>
+      <td class="td-mono td-bold">${qty}</td>
+      <td>${priceCell}</td>
+      <td>${dateCell}</td>
+      <td class="td-muted" style="font-size:0.68rem;">${email}</td>
     </tr>`;
   }).join('');
 
@@ -665,11 +706,15 @@ function goSearchPage(p){ searchPage=p; renderSearch(); window.scrollTo(0,200); 
 
 function renderSearchStats(){
   document.getElementById('search-stats').classList.remove('hidden');
+  const excessCount = searchResults.filter(r=>r._source==='excess').length;
+  const demandCount = searchResults.filter(r=>r._source==='demand').length;
+  const intelCount  = searchResults.filter(r=>r._source==='intel').length;
   document.getElementById('ss-count').textContent = searchResults.length.toLocaleString();
-  document.getElementById('ss-customers').textContent = [...new Set(searchResults.map(r=>r.customer))].length;
-  const qty = searchResults.reduce((a,r)=>{const q=parseFloat(r.quantity);return a+(isNaN(q)?0:q);},0);
+  document.getElementById('ss-customers').textContent = 
+    `${excessCount} excess · ${demandCount} demand · ${intelCount} intel`;
+  const qty = searchResults.filter(r=>r._source==='excess').reduce((a,r)=>{const q=parseFloat(r.quantity);return a+(isNaN(q)?0:q);},0);
   document.getElementById('ss-qty').textContent = qty>0?qty.toLocaleString():'—';
-  const prices = searchResults.map(r=>parseFloat(r.price)).filter(p=>!isNaN(p));
+  const prices = searchResults.filter(r=>r._source==='excess').map(r=>parseFloat(r.price)).filter(p=>!isNaN(p));
   const avg = prices.length?(prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2):'—';
   document.getElementById('ss-price').textContent = avg!=='—'?'$'+avg:'—';
 }
@@ -719,10 +764,11 @@ async function saveField(id,field){
 }
 
 // ── SEARCH MODAL ──────────────────────────────────────────────────────────
-function openSearchModal(id){
-  const r = searchResults.find(x=>x.id===id);
+function openSearchModal(id, src){
+  const r = searchResults.find(x=>x.id===id && (x._source||'excess')===(src||'excess'));
   if(!r) return;
-  document.getElementById('modal-title').textContent = r.normalized_pn||r.mpn||'PART DETAIL';
+  const srcLabel = {excess:'EXCESS',demand:'DEMAND',intel:'INTEL'}[src||'excess'];
+  document.getElementById('modal-title').textContent = (r.normalized_pn||r.mpn||'PART DETAIL') + ' · ' + srcLabel;
   document.getElementById('modal-body').innerHTML = `
     <div class="frow"><div class="flbl">Customer</div><div class="fval">${r.customer||'—'}</div></div>
     <div class="frow"><div class="flbl">MPN</div><div class="fval mono">${r.mpn||'—'}</div></div>
