@@ -165,7 +165,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">excess<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.29</span><div class="db-pill" id="db-pill">Connected · 262,117 records</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.30</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -508,6 +508,22 @@ const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZi
 const PAGE = 25;
 
 let searchResults = [], searchPage = 1, searchTerm = '';
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+async function loadCount(){
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/excess_parts?select=id`, {
+      headers: {
+        'apikey': KEY, 'Authorization': `Bearer ${KEY}`,
+        'Prefer': 'count=exact', 'Range': '0-0'
+      }
+    });
+    const count = res.headers.get('content-range')?.split('/')[1];
+    if(count) document.getElementById('db-pill').textContent = 
+      `Connected · ${parseInt(count).toLocaleString()} records`;
+  } catch(e){}
+}
+document.addEventListener('DOMContentLoaded', loadCount);
 
 // ── UTILS ──────────────────────────────────────────────────────────────────
 function norm(v){ return v.replace(/[^a-zA-Z0-9]/g,'').toUpperCase(); }
@@ -1136,6 +1152,7 @@ async function importCSV(){
       prog.textContent = `${imported} / ${records.length} imported…`;
     }
     showToast(`✓ ${imported} records imported successfully!`,'success');
+    loadCount();
     btn.textContent = '✓ Import into Database';
     btn.disabled = false;
     prog.textContent = `${imported} records added`;
