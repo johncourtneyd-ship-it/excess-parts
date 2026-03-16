@@ -3,868 +3,785 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Courtney's Excess Parts</title>
+<title>Courtney's Parts Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0e14;
-  --surface: #111820;
-  --surface2: #1a2332;
-  --surface3: #1f2a3d;
-  --border: #2a3a52;
-  --border-hi: #3d5470;
-  --accent: #00d4ff;
-  --accent2: #00ff9d;
-  --accent3: #ff6b35;
-  --yellow: #ffd60a;
-  --text: #e8f0f8;
-  --text2: #7a9bb5;
-  --text3: #3d5470;
-  --mono: 'IBM Plex Mono', monospace;
-  --display: 'Syne', sans-serif;
-  --radius: 6px;
-  --glow: 0 0 20px rgba(0,212,255,0.15);
+:root{
+  --bg:#0a0e14;--surface:#111820;--surface2:#1a2332;--surface3:#1f2a3d;
+  --border:#2a3a52;--border-hi:#3d5470;
+  --accent:#00d4ff;--accent2:#00ff9d;--accent3:#ff6b35;--yellow:#ffd60a;--purple:#bc8cff;
+  --text:#e8f0f8;--text2:#7a9bb5;--text3:#3d5470;
+  --mono:'IBM Plex Mono',monospace;--display:'Syne',sans-serif;--radius:6px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--display);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* GRID BG */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-  z-index: 0;
-}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--display);background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
 
 /* HEADER */
-.header {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(10,14,20,0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 32px;
-  height: 64px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.logo {
-  font-family: var(--display);
-  font-size: 1.1rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: var(--text);
-}
-.logo span { color: var(--accent); }
-.logo sub {
-  font-size: 0.55rem;
-  font-weight: 400;
-  color: var(--text3);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  display: block;
-  margin-top: -2px;
-}
-.header-right { display: flex; align-items: center; gap: 16px; }
-.db-status {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  color: var(--accent2);
-  border: 1px solid rgba(0,255,157,0.2);
-  background: rgba(0,255,157,0.05);
-  padding: 4px 12px;
-  border-radius: 20px;
-  display: flex; align-items: center; gap: 6px;
-}
-.db-status::before {
-  content: '';
-  width: 6px; height: 6px;
-  background: var(--accent2);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.header{position:sticky;top:0;z-index:100;background:rgba(10,14,20,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:var(--display);font-size:1rem;font-weight:800;letter-spacing:-0.5px;}
+.logo span{color:var(--accent);}
+.logo sub{font-size:0.5rem;font-weight:400;color:var(--text3);letter-spacing:2px;text-transform:uppercase;display:block;margin-top:-2px;}
+.db-pill{font-family:var(--mono);font-size:0.65rem;color:var(--accent2);border:1px solid rgba(0,255,157,0.2);background:rgba(0,255,157,0.05);padding:3px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;}
+.db-pill::before{content:'';width:5px;height:5px;background:var(--accent2);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 
-/* HERO SEARCH */
-.hero {
-  position: relative;
-  padding: 64px 32px 48px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-.hero-label {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  color: var(--accent);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 16px;
-  opacity: 0;
-  animation: fadeUp 0.5s 0.1s forwards;
-}
-.hero h1 {
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -1px;
-  margin-bottom: 32px;
-  opacity: 0;
-  animation: fadeUp 0.5s 0.2s forwards;
-}
-.hero h1 em {
-  font-style: normal;
-  color: var(--accent);
-  position: relative;
-}
-@keyframes fadeUp {
-  from { opacity:0; transform: translateY(16px); }
-  to   { opacity:1; transform: translateY(0); }
-}
+/* NAV TABS */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:0;position:sticky;top:56px;z-index:99;}
+.nav-tab{font-size:0.82rem;font-weight:600;color:var(--text2);padding:12px 20px;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;margin-bottom:-1px;display:flex;align-items:center;gap:6px;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.nav-tab .badge{font-size:0.6rem;background:var(--yellow);color:#0a0e14;border-radius:10px;padding:1px 6px;font-weight:700;}
 
-/* SEARCH BOX */
-.search-box {
-  position: relative;
-  opacity: 0;
-  animation: fadeUp 0.5s 0.3s forwards;
-}
-.search-inner {
-  display: flex;
-  align-items: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  overflow: hidden;
-}
-.search-inner:focus-within {
-  border-color: var(--accent);
-  box-shadow: var(--glow);
-}
-.search-inner input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 1rem;
-  padding: 18px 20px;
-  letter-spacing: 1px;
-}
-.search-inner input::placeholder { color: var(--text3); letter-spacing: 0; font-size: 0.85rem; }
-.search-btn {
-  background: var(--accent);
-  color: var(--bg);
-  border: none;
-  font-family: var(--display);
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 18px 28px;
-  cursor: pointer;
-  transition: background 0.15s;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-.search-btn:hover { background: #33ddff; }
-.search-hint {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  color: var(--text3);
-  margin-top: 10px;
-  display: flex; align-items: center; gap: 8px;
-}
-.norm-pill {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  background: rgba(0,212,255,0.08);
-  border: 1px solid rgba(0,212,255,0.2);
-  color: var(--accent);
-  padding: 2px 10px;
-  border-radius: 20px;
-  display: none;
-}
+/* MAIN */
+.main{padding:24px;position:relative;z-index:1;max-width:1400px;margin:0 auto;}
+
+/* SEARCH HERO */
+.search-hero{margin-bottom:24px;}
+.search-hero h2{font-size:1.4rem;font-weight:800;margin-bottom:16px;letter-spacing:-0.5px;}
+.search-hero h2 em{font-style:normal;color:var(--accent);}
+.search-row{display:flex;gap:10px;align-items:center;max-width:800px;}
+.search-wrap{flex:1;display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color 0.2s,box-shadow 0.2s;}
+.search-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 16px rgba(0,212,255,0.12);}
+.search-wrap input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:0.9rem;padding:13px 16px;letter-spacing:0.5px;}
+.search-wrap input::placeholder{color:var(--text3);font-family:var(--display);font-size:0.82rem;letter-spacing:0;}
+.search-btn{background:var(--accent);color:var(--bg);border:none;font-family:var(--display);font-size:0.82rem;font-weight:700;padding:13px 24px;cursor:pointer;transition:background 0.15s;white-space:nowrap;}
+.search-btn:hover{background:#33ddff;}
+.search-hint{font-family:var(--mono);font-size:0.65rem;color:var(--text3);margin-top:7px;}
+.search-hint span{color:var(--accent);}
 
 /* STATS */
-.stats-strip {
-  display: flex; gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  margin: 32px 0 0;
-  opacity: 0;
-  animation: fadeUp 0.5s 0.4s forwards;
-}
-.stat {
-  flex: 1;
-  background: var(--surface);
-  padding: 16px 20px;
-  text-align: center;
-}
-.stat .n {
-  font-family: var(--mono);
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--accent);
-}
-.stat .l {
-  font-size: 0.65rem;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-top: 2px;
-}
-
-/* MAIN CONTENT */
-.main { padding: 0 32px 48px; position: relative; z-index: 1; }
-
-/* RESULTS HEADER */
-.results-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 12px;
-  padding: 0 4px;
-}
-.results-label {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  color: var(--text2);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.results-label strong { color: var(--accent); font-size: 0.9rem; }
+.stats-row{display:flex;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.stat{flex:1;background:var(--surface);padding:12px 16px;text-align:center;}
+.stat .n{font-family:var(--mono);font-size:1.1rem;font-weight:600;color:var(--accent);}
+.stat .l{font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:1px;}
 
 /* TABLE */
-.table-wrap {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  overflow-x: auto;
-}
-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 900px; }
-thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
-thead th {
-  padding: 11px 14px;
-  text-align: left;
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  font-weight: 600;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  white-space: nowrap;
-}
-tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: background 0.1s;
-  cursor: pointer;
-}
-tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: var(--surface2); }
-tbody td { padding: 11px 14px; vertical-align: middle; }
+.table-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:0.78rem;}
+thead tr{background:var(--surface2);border-bottom:1px solid var(--border);}
+thead th{padding:9px 12px;text-align:left;font-family:var(--mono);font-size:0.6rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--surface2);}
+tbody td{padding:9px 12px;vertical-align:middle;}
+.td-mono{font-family:var(--mono);font-size:0.7rem;}
+.td-accent{color:var(--accent);}
+.td-blue{color:#79c0ff;}
+.td-purple{color:var(--purple);}
+.td-green{color:var(--accent2);font-weight:600;}
+.td-muted{color:var(--text2);font-size:0.72rem;}
+.td-bold{font-weight:600;}
+.td-clip{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.td-clip-sm{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-.td-customer {
-  font-weight: 600;
-  font-size: 0.78rem;
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.td-date {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  color: #bc8cff;
-  white-space: nowrap;
-}
-.td-mpn {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  color: var(--accent);
-}
-.td-cpn {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  color: #79c0ff;
-}
-.td-desc {
-  color: var(--text2);
-  font-size: 0.75rem;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.td-mfr { color: var(--text2); font-size: 0.75rem; }
-.td-qty { font-family: var(--mono); font-weight: 600; }
-.td-price {
-  font-family: var(--mono);
-  font-weight: 600;
-  color: var(--accent2);
-}
-.td-price.empty { color: var(--text3); }
-
-/* EDITABLE CELL */
-.editable {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 6px; border-radius: 4px;
-  border: 1px solid transparent;
-  cursor: pointer; transition: all 0.1s;
-}
-.editable:hover { background: var(--surface3); border-color: var(--border); }
-.edit-icon { opacity: 0; font-size: 0.6rem; color: var(--text3); }
-.editable:hover .edit-icon { opacity: 1; }
-.edit-form { display: flex; gap: 4px; align-items: center; }
-.edit-input {
-  background: var(--bg);
-  border: 1px solid var(--accent);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  padding: 3px 8px;
-  border-radius: 4px;
-  outline: none;
-  width: 100px;
-}
-.save-btn {
-  background: var(--accent2); color: var(--bg);
-  border: none; border-radius: 4px;
-  padding: 3px 8px; font-size: 0.68rem; font-weight: 700; cursor: pointer;
-}
-.cancel-btn {
-  background: transparent; color: var(--text2);
-  border: 1px solid var(--border);
-  border-radius: 4px; padding: 3px 7px; font-size: 0.68rem; cursor: pointer;
-}
+/* EDITABLE */
+.editable{display:inline-flex;align-items:center;gap:4px;padding:2px 5px;border-radius:4px;border:1px solid transparent;cursor:pointer;transition:all 0.1s;}
+.editable:hover{background:var(--surface3);border-color:var(--border);}
+.pencil{opacity:0;font-size:0.55rem;color:var(--text3);}
+.editable:hover .pencil{opacity:1;}
+.edit-form{display:flex;gap:4px;align-items:center;}
+.edit-input{background:var(--bg);border:1px solid var(--accent);color:var(--text);font-family:var(--mono);font-size:0.7rem;padding:2px 7px;border-radius:4px;outline:none;width:100px;}
+.save-btn{background:var(--accent2);color:var(--bg);border:none;border-radius:4px;padding:2px 7px;font-size:0.68rem;font-weight:700;cursor:pointer;}
+.cancel-btn{background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:0.68rem;cursor:pointer;}
+.edited-dot{width:5px;height:5px;background:var(--yellow);border-radius:50%;display:inline-block;margin-left:3px;vertical-align:middle;}
 
 /* PAGINATION */
-.pagination {
-  display: flex; align-items: center; justify-content: center;
-  gap: 8px; margin-top: 20px;
-}
-.page-btn {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text2);
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  padding: 6px 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.1s;
-}
-.page-btn:hover { border-color: var(--accent); color: var(--accent); }
-.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-.page-info {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  color: var(--text3);
-}
+.pag{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;}
+.pag-btn{background:var(--surface);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:0.72rem;padding:5px 12px;border-radius:4px;cursor:pointer;transition:all 0.1s;}
+.pag-btn:hover{border-color:var(--accent);color:var(--accent);}
+.pag-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.pag-info{font-family:var(--mono);font-size:0.68rem;color:var(--text3);}
+
+/* FORM */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;max-width:700px;}
+.form-card h3{font-size:0.85rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:20px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:20px;}
+.form-grid.two-col{grid-template-columns:1fr 1fr;}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg label{font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;}
+.fg input,.fg select,.fg textarea{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--display);font-size:0.82rem;padding:8px 12px;border-radius:4px;outline:none;transition:border-color 0.15s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent);}
+.fg textarea{height:80px;resize:vertical;}
+.fg select option{background:var(--surface);}
+.norm-preview{font-family:var(--mono);font-size:0.62rem;color:var(--accent);margin-top:3px;}
+.form-actions{display:flex;gap:10px;margin-top:4px;}
+.btn-primary{background:var(--accent);color:var(--bg);border:none;font-family:var(--display);font-size:0.82rem;font-weight:700;padding:10px 24px;border-radius:var(--radius);cursor:pointer;transition:background 0.15s;}
+.btn-primary:hover{background:#33ddff;}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);font-family:var(--display);font-size:0.82rem;padding:10px 20px;border-radius:var(--radius);cursor:pointer;transition:all 0.15s;}
+.btn-ghost:hover{border-color:var(--border-hi);color:var(--text);}
+
+/* STATUS BADGE */
+.status{font-family:var(--mono);font-size:0.62rem;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+.status-open{background:rgba(0,212,255,0.1);color:var(--accent);border:1px solid rgba(0,212,255,0.2);}
+.status-quoted{background:rgba(255,214,10,0.1);color:var(--yellow);border:1px solid rgba(255,214,10,0.2);}
+.status-filled{background:rgba(0,255,157,0.1);color:var(--accent2);border:1px solid rgba(0,255,157,0.2);}
+.status-lost{background:rgba(255,107,53,0.1);color:var(--accent3);border:1px solid rgba(255,107,53,0.2);}
 
 /* STATE BOXES */
-.state-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 60px 40px;
-  text-align: center;
-}
-.state-box h3 { font-size: 1rem; color: var(--text2); margin-bottom: 8px; }
-.state-box p { font-size: 0.8rem; color: var(--text3); line-height: 1.6; }
-.spinner {
-  width: 28px; height: 28px;
-  border: 2px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  margin: 0 auto 14px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+.state-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:48px 40px;text-align:center;}
+.state-box h3{font-size:0.95rem;color:var(--text2);margin-bottom:8px;}
+.state-box p{font-size:0.78rem;color:var(--text3);line-height:1.6;max-width:400px;margin:0 auto;}
+.spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-/* DETAIL MODAL */
-.modal-overlay {
-  position: fixed; inset: 0; z-index: 200;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(4px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.2s;
-}
-.modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  width: 100%; max-width: 600px;
-  max-height: 90vh; overflow-y: auto;
-  transform: translateY(20px);
-  transition: transform 0.2s;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
-}
-.modal-overlay.open .modal { transform: translateY(0); }
-.modal-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.modal-header h2 {
-  font-family: var(--mono);
-  font-size: 0.85rem;
-  color: var(--accent);
-  letter-spacing: 1px;
-}
-.modal-close {
-  background: transparent; border: none;
-  color: var(--text3); font-size: 1.2rem;
-  cursor: pointer; padding: 4px 8px;
-}
-.modal-close:hover { color: var(--text); }
-.modal-body { padding: 24px; }
-.field-row {
-  display: flex; gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  align-items: flex-start;
-}
-.field-row:last-child { border-bottom: none; }
-.field-label {
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  width: 130px;
-  flex-shrink: 0;
-  padding-top: 2px;
-}
-.field-value {
-  font-size: 0.82rem;
-  color: var(--text);
-  flex: 1;
-  word-break: break-all;
-}
-.field-value.mono { font-family: var(--mono); color: var(--accent); }
-.field-value.price { font-family: var(--mono); color: var(--accent2); font-weight: 600; }
-
-/* EDIT IN MODAL */
-.modal-edit-row {
-  display: flex; gap: 8px; align-items: center; margin-top: 4px;
-}
-.modal-edit-row input {
-  background: var(--bg);
-  border: 1px solid var(--accent);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 0.8rem;
-  padding: 6px 10px;
-  border-radius: 4px;
-  outline: none;
-  flex: 1;
-}
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.6);}
+.overlay.open .modal{transform:translateY(0);}
+.modal-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-hdr h3{font-family:var(--mono);font-size:0.8rem;color:var(--accent);letter-spacing:1px;}
+.modal-x{background:transparent;border:none;color:var(--text3);font-size:1.1rem;cursor:pointer;padding:4px 8px;}
+.modal-x:hover{color:var(--text);}
+.modal-bdy{padding:20px;}
+.frow{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.frow:last-child{border-bottom:none;}
+.flbl{font-family:var(--mono);font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;width:110px;flex-shrink:0;padding-top:2px;}
+.fval{font-size:0.8rem;color:var(--text);flex:1;word-break:break-all;}
+.fval.mono{font-family:var(--mono);color:var(--accent);}
+.medit{display:flex;gap:7px;align-items:center;margin-top:4px;}
+.medit input,.medit textarea{background:var(--bg);border:1px solid var(--accent);color:var(--text);font-family:var(--mono);font-size:0.78rem;padding:5px 9px;border-radius:4px;outline:none;flex:1;}
+.medit textarea{height:65px;font-family:var(--display);resize:vertical;}
+.msave{background:var(--accent2);color:var(--bg);border:none;border-radius:4px;padding:5px 11px;font-size:0.7rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+.msave:hover{background:#33ffb5;}
+.mts{font-size:0.6rem;color:var(--text3);font-family:var(--mono);margin-top:3px;}
 
 /* TOAST */
-.toast {
-  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 0.8rem;
-  padding: 12px 20px;
-  border-radius: var(--radius);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-  transform: translateY(80px); opacity: 0;
-  transition: all 0.25s;
-  display: flex; align-items: center; gap: 8px;
-}
-.toast.show { transform: translateY(0); opacity: 1; }
-.toast.success { border-left: 3px solid var(--accent2); }
-.toast.error { border-left: 3px solid var(--accent3); }
-
-.hidden { display: none !important; }
+.toast{position:fixed;bottom:20px;right:20px;z-index:9999;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:0.78rem;padding:10px 16px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,0.5);transform:translateY(80px);opacity:0;transition:all 0.25s;display:flex;align-items:center;gap:7px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:3px solid var(--accent2);}
+.toast.error{border-left:3px solid var(--accent3);}
+.hidden{display:none!important;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="header">
-  <div class="logo">
-    excess<span>/db</span>
-    <sub>Parts Intelligence</sub>
-  </div>
-  <div class="header-right">
-    <div class="db-status" id="db-status">Connected</div>
-  </div>
+  <div class="logo">excess<span>/db</span><sub>Parts Intelligence</sub></div>
+  <div class="db-pill">Connected · 262,117 records</div>
 </header>
 
-<!-- HERO / SEARCH -->
-<div class="hero">
-  <div class="hero-label">Excess Inventory Search</div>
-  <h1>Find any part across<br><em>all customer lists</em></h1>
+<nav class="nav">
+  <div class="nav-tab active" id="tab-search" onclick="switchTab('search')">🔍 Search Excess</div>
+  <div class="nav-tab" id="tab-demand" onclick="switchTab('demand')">📋 Log Demand</div>
+  <div class="nav-tab" id="tab-intel" onclick="switchTab('intel')">💡 Part Intel</div>
+</nav>
 
-  <div class="search-box">
-    <div class="search-inner">
-      <input type="text" id="search-input"
-        placeholder="Enter MPN or Customer Part Number..."
-        autocomplete="off" spellcheck="false"
-        oninput="onInput()" onkeydown="if(event.key==='Enter')doSearch()" />
-      <button class="search-btn" onclick="doSearch()">Search</button>
+<div class="main">
+
+  <!-- ═══ SEARCH TAB ═══ -->
+  <div id="pane-search">
+    <div class="search-hero">
+      <h2>Find any part across <em>all customer lists</em></h2>
+      <div class="search-row">
+        <div class="search-wrap">
+          <input type="text" id="search-input" placeholder="MPN or Customer P/N — partials work (e.g. SFP10G)…"
+            autocomplete="off" spellcheck="false"
+            oninput="onSearchInput()" onkeydown="if(event.key==='Enter')doSearch()" />
+        </div>
+        <button class="search-btn" onclick="doSearch()">Search</button>
+      </div>
+      <div class="search-hint">Partial search: type <span>SFP10G</span> to find <span>SFP10GLRXAX</span> · Special characters stripped automatically</div>
     </div>
-    <div class="search-hint">
-      Special characters stripped automatically &nbsp;·&nbsp;
-      <span class="norm-pill" id="norm-pill"></span>
+
+    <div id="search-stats" class="stats-row hidden">
+      <div class="stat"><div class="n" id="ss-count">—</div><div class="l">Results</div></div>
+      <div class="stat"><div class="n" id="ss-customers">—</div><div class="l">Customer Lists</div></div>
+      <div class="stat"><div class="n" id="ss-qty">—</div><div class="l">Total Qty</div></div>
+      <div class="stat"><div class="n" id="ss-price">—</div><div class="l">Avg Price</div></div>
+    </div>
+
+    <div class="state-box" id="search-welcome">
+      <h3 style="color:var(--text)">Ready to search</h3>
+      <p>Enter any part number above. Partial matches supported — type a few characters and see what comes back.</p>
+    </div>
+    <div class="state-box hidden" id="search-loading"><div class="spinner"></div><h3>Searching…</h3></div>
+    <div class="state-box hidden" id="search-empty"><h3>No results found</h3><p id="search-empty-msg"></p></div>
+
+    <div id="search-results" class="hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 2px;">
+        <div class="pag-info">Results for <strong style="color:var(--accent);font-family:var(--mono)" id="search-term"></strong></div>
+        <div class="pag-info" id="search-page-info"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Customer</th><th>MPN</th><th>Customer P/N</th><th>Description</th>
+            <th>Manufacturer</th><th>Qty</th><th>Price</th><th>Date</th><th>Email</th>
+          </tr></thead>
+          <tbody id="search-tbody"></tbody>
+        </table>
+      </div>
+      <div class="pag" id="search-pag"></div>
     </div>
   </div>
 
-  <div class="stats-strip" id="stats-strip" style="display:none">
-    <div class="stat"><div class="n" id="stat-count">—</div><div class="l">Results</div></div>
-    <div class="stat"><div class="n" id="stat-customers">—</div><div class="l">Customer Lists</div></div>
-    <div class="stat"><div class="n" id="stat-qty">—</div><div class="l">Total Qty</div></div>
-    <div class="stat"><div class="n" id="stat-price">—</div><div class="l">Avg Price</div></div>
+  <!-- ═══ DEMAND TAB ═══ -->
+  <div id="pane-demand" class="hidden">
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+
+      <div class="form-card" style="flex:0 0 auto;">
+        <h3>Log New Demand Request</h3>
+        <div class="form-grid">
+          <div class="fg">
+            <label>Customer / Company</label>
+            <input type="text" id="d-customer" placeholder="e.g. Acme Corp" />
+          </div>
+          <div class="fg">
+            <label>Email</label>
+            <input type="email" id="d-email" placeholder="contact@company.com" />
+          </div>
+          <div class="fg">
+            <label>MPN</label>
+            <input type="text" id="d-mpn" placeholder="Manufacturer Part Number" oninput="normPreview('d-mpn','d-norm-preview')" />
+            <div class="norm-preview" id="d-norm-preview"></div>
+          </div>
+          <div class="fg">
+            <label>Customer P/N</label>
+            <input type="text" id="d-cpn" placeholder="Their internal part number" />
+          </div>
+          <div class="fg">
+            <label>Manufacturer</label>
+            <input type="text" id="d-mfr" placeholder="e.g. Broadcom" />
+          </div>
+          <div class="fg">
+            <label>Description</label>
+            <input type="text" id="d-desc" placeholder="Part description" />
+          </div>
+          <div class="fg">
+            <label>Qty Needed</label>
+            <input type="text" id="d-qty" placeholder="e.g. 500" />
+          </div>
+          <div class="fg">
+            <label>Target Price (USD)</label>
+            <input type="text" id="d-price" placeholder="e.g. 25.00" />
+          </div>
+          <div class="fg">
+            <label>Date Received</label>
+            <input type="date" id="d-date" />
+          </div>
+          <div class="fg">
+            <label>Status</label>
+            <select id="d-status">
+              <option value="Open">Open</option>
+              <option value="Quoted">Quoted</option>
+              <option value="Filled">Filled</option>
+              <option value="Lost">Lost</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:16px;">
+          <label>Notes</label>
+          <textarea id="d-notes" placeholder="Any additional notes…"></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="saveDemand()">Save Demand Request</button>
+          <button class="btn-ghost" onclick="clearDemandForm()">Clear</button>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:300px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="pag-info" style="font-size:0.75rem;color:var(--text2);">Recent Demand Requests</div>
+          <button class="btn-ghost" style="padding:5px 12px;font-size:0.72rem;" onclick="loadDemand()">↻ Refresh</button>
+        </div>
+        <div id="demand-list">
+          <div class="state-box"><h3>No requests yet</h3><p>Log your first demand request using the form.</p></div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- ═══ PART INTEL TAB ═══ -->
+  <div id="pane-intel" class="hidden">
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+
+      <div class="form-card" style="flex:0 0 auto;">
+        <h3>Log Part Information</h3>
+        <div class="form-grid">
+          <div class="fg">
+            <label>Source / Company</label>
+            <input type="text" id="i-source" placeholder="Who gave you this info" />
+          </div>
+          <div class="fg">
+            <label>Email</label>
+            <input type="email" id="i-email" placeholder="contact@company.com" />
+          </div>
+          <div class="fg">
+            <label>MPN</label>
+            <input type="text" id="i-mpn" placeholder="Manufacturer Part Number" oninput="normPreview('i-mpn','i-norm-preview')" />
+            <div class="norm-preview" id="i-norm-preview"></div>
+          </div>
+          <div class="fg">
+            <label>Customer P/N</label>
+            <input type="text" id="i-cpn" placeholder="Internal part number" />
+          </div>
+          <div class="fg">
+            <label>Manufacturer</label>
+            <input type="text" id="i-mfr" placeholder="e.g. Texas Instruments" />
+          </div>
+          <div class="fg">
+            <label>Description</label>
+            <input type="text" id="i-desc" placeholder="Part description" />
+          </div>
+          <div class="fg">
+            <label>Date Received</label>
+            <input type="date" id="i-date" />
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:16px;">
+          <label>Notes</label>
+          <textarea id="i-notes" placeholder="Any additional notes…"></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="saveIntel()">Save Part Intel</button>
+          <button class="btn-ghost" onclick="clearIntelForm()">Clear</button>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:300px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="pag-info" style="font-size:0.75rem;color:var(--text2);">Recent Part Intel</div>
+          <button class="btn-ghost" style="padding:5px 12px;font-size:0.72rem;" onclick="loadIntel()">↻ Refresh</button>
+        </div>
+        <div id="intel-list">
+          <div class="state-box"><h3>No intel yet</h3><p>Log your first part intel using the form.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- MAIN -->
-<div class="main" id="main-content">
-  <div class="state-box" id="welcome-box">
-    <h3 style="color:var(--text)">Ready to search</h3>
-    <p>Enter any part number above.<br>
-    Dashes and special characters are stripped automatically — just type the number.</p>
-  </div>
-  <div class="state-box hidden" id="loading-box">
-    <div class="spinner"></div>
-    <h3>Searching...</h3>
-  </div>
-  <div class="state-box hidden" id="no-results-box">
-    <h3>No results found</h3>
-    <p id="no-results-msg"></p>
-  </div>
-  <div id="results-section" class="hidden">
-    <div class="results-header">
-      <div class="results-label">Results for <strong id="results-term"></strong></div>
-      <div class="results-label" id="results-page-info"></div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Customer</th>
-            <th>MPN</th>
-            <th>Customer P/N</th>
-            <th>Description</th>
-            <th>Manufacturer</th>
-            <th>Qty</th>
-            <th>Price</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody id="results-tbody"></tbody>
-      </table>
-    </div>
-    <div class="pagination" id="pagination"></div>
-  </div>
-</div>
-
-<!-- DETAIL MODAL -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<!-- MODAL -->
+<div class="overlay" id="modal-overlay" onclick="closeModal(event)">
   <div class="modal">
-    <div class="modal-header">
-      <h2 id="modal-title">PART DETAIL</h2>
-      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div class="modal-hdr">
+      <h3 id="modal-title">PART DETAIL</h3>
+      <button class="modal-x" onclick="closeModalDirect()">✕</button>
     </div>
-    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-bdy" id="modal-body"></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const API_BASE = 'https://excess-data.bubbleapps.io/version-test/api/1.1/obj/excesspart';
-const API_KEY  = 'cf121986fa4afe2b1b18afb0eacad703';
-const PAGE_SIZE = 25;
+const URL =  + SUPABASE_URL + ;
+const KEY =  + SUPABASE_KEY + ;
+const PAGE = 25;
 
-let currentResults = [];
-let currentPage = 1;
-let currentNorm = '';
-let totalCount = 0;
-let overrides = {};
+let searchResults = [], searchPage = 1, searchTerm = '';
 
-// Load saved overrides
-try { overrides = JSON.parse(localStorage.getItem('excess_ov_v2') || '{}'); } catch(e){}
+// ── UTILS ──────────────────────────────────────────────────────────────────
+function norm(v){ return v.replace(/[^a-zA-Z0-9]/g,'').toUpperCase(); }
 
-function saveOverrides() {
-  try { localStorage.setItem('excess_ov_v2', JSON.stringify(overrides)); } catch(e){}
+function api(table, opts={}){
+  return fetch(`${URL}/rest/v1/${table}${opts.query||''}`, {
+    method: opts.method||'GET',
+    headers: {
+      'apikey': KEY, 'Authorization': `Bearer ${KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer||'return=representation',
+      ...(opts.headers||{})
+    },
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
 }
 
-function norm(v) { return v.replace(/[^a-zA-Z0-9]/g,'').toUpperCase(); }
-
-function onInput() {
-  const raw = document.getElementById('search-input').value.trim();
-  const pill = document.getElementById('norm-pill');
-  if (!raw) { pill.style.display='none'; return; }
+function normPreview(inputId, previewId){
+  const raw = document.getElementById(inputId).value.trim();
+  const el = document.getElementById(previewId);
+  if(!raw){ el.textContent=''; return; }
   const n = norm(raw);
-  if (n !== raw.toUpperCase()) {
-    pill.style.display='inline-block';
-    pill.textContent = '→ ' + n;
-  } else {
-    pill.style.display='none';
-  }
+  el.textContent = n !== raw.toUpperCase() ? '→ normalized: '+n : '';
 }
 
-async function doSearch() {
-  const raw = document.getElementById('search-input').value.trim();
-  if (!raw) return;
-  const n = norm(raw);
-  currentNorm = n;
-  currentPage = 1;
+function today(){ return new Date().toISOString().slice(0,10); }
 
-  showState('loading');
+function statusBadge(s){
+  const cls = {Open:'status-open',Quoted:'status-quoted',Filled:'status-filled',Lost:'status-lost'}[s]||'status-open';
+  return `<span class="status ${cls}">${s||'Open'}</span>`;
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function switchTab(t){
+  ['search','demand','intel'].forEach(x=>{
+    document.getElementById('pane-'+x).classList.toggle('hidden',x!==t);
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+  });
+  if(t==='demand') loadDemand();
+  if(t==='intel') loadIntel();
+}
+
+// ── SEARCH ────────────────────────────────────────────────────────────────
+function onSearchInput(){
+  const raw = document.getElementById('search-input').value.trim();
+}
+
+async function doSearch(){
+  const raw = document.getElementById('search-input').value.trim();
+  if(!raw) return;
+  searchTerm = raw;
+  searchPage = 1;
+  showSearchState('loading');
 
   try {
-    // Search by normalized_pn (MPN) OR customer_pn
-    // Bubble API: search with constraints
-    // Search by normalized_pn first
-    const constraints1 = JSON.stringify([{ key: 'normalized_mpn_text', constraint_type: 'contains keyword', value: n }]);
-    const url1 = `${API_BASE}?api_token=${API_KEY}&constraints=${encodeURIComponent(constraints1)}&limit=100&cursor=0`;
-    
-    console.log('Calling URL:', url1);
-    const res = await fetch(url1);
+    const n = norm(raw);
+    // Search normalized_pn with partial match
+    let res = await api('excess_parts', {
+      query: `?normalized_pn=ilike.*${encodeURIComponent(n)}*&order=customer.asc&limit=500`
+    });
+    let data = await res.json();
 
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
-    const data = await res.json();
-    console.log('API Response:', JSON.stringify(data).substring(0, 500));
-    let results = data.response?.results || [];
-
-    // Also search customer_pn if no results
-    if (results.length === 0) {
-      const constraints2 = JSON.stringify([{ key: 'customer_pn_text', constraint_type: 'contains keyword', value: n }]);
-      const url2 = `${API_BASE}?api_token=${API_KEY}&constraints=${encodeURIComponent(constraints2)}&limit=100&cursor=0`;
-      const res2 = await fetch(url2);
-      if (res2.ok) {
-        const data2 = await res2.json();
-        results = data2.response?.results || [];
-      }
+    // Fallback: search mpn with raw input
+    if(!data.length){
+      res = await api('excess_parts', {
+        query: `?mpn=ilike.*${encodeURIComponent(raw)}*&order=customer.asc&limit=500`
+      });
+      data = await res.json();
     }
 
-    // Apply overrides
-    results = results.map(r => {
-      const key = r._id;
-      const ov = overrides[key];
-      return ov ? {...r, price: ov.price ?? r['Price'], list_date: ov.date ?? r['List Date'], _modified: true} : r;
-    });
+    // Fallback: search customer_pn
+    if(!data.length){
+      res = await api('excess_parts', {
+        query: `?customer_pn=ilike.*${encodeURIComponent(raw)}*&order=customer.asc&limit=500`
+      });
+      data = await res.json();
+    }
 
-    currentResults = results;
-    totalCount = results.length;
-
-    if (results.length === 0) {
-      showState('no-results');
-      document.getElementById('no-results-msg').textContent =
-        `"${n}" was not found in any customer excess list.`;
+    searchResults = data;
+    if(!data.length){
+      showSearchState('empty');
+      document.getElementById('search-empty-msg').textContent = `"${n}" not found in any customer excess list.`;
+      document.getElementById('search-stats').classList.add('hidden');
       return;
     }
-
-    renderResults();
-    renderStats();
-    showState('results');
-
-  } catch(e) {
-    showState('no-results');
-    document.getElementById('no-results-msg').textContent = 'Error connecting to database: ' + e.message;
+    renderSearch();
+    renderSearchStats();
+    showSearchState('results');
+  } catch(e){
+    showSearchState('empty');
+    document.getElementById('search-empty-msg').textContent = 'Error: '+e.message;
   }
 }
 
-function renderResults() {
-  const start = (currentPage - 1) * PAGE_SIZE;
-  const page = currentResults.slice(start, start + PAGE_SIZE);
-  const tbody = document.getElementById('results-tbody');
+function renderSearch(){
+  const start = (searchPage-1)*PAGE;
+  const page = searchResults.slice(start, start+PAGE);
+  document.getElementById('search-term').textContent = norm(searchTerm);
+  document.getElementById('search-page-info').textContent =
+    `${start+1}–${Math.min(start+PAGE,searchResults.length)} of ${searchResults.length}`;
 
-  document.getElementById('results-term').textContent = currentNorm;
-  document.getElementById('results-page-info').textContent =
-    `${start+1}–${Math.min(start+PAGE_SIZE, totalCount)} of ${totalCount}`;
-
-  tbody.innerHTML = page.map(r => {
-    const price = overrides[r._id]?.price ?? r['Price'] ?? '';
-    const date = overrides[r._id]?.date ?? r['List Date'] ?? '';
-    const modBadge = r._modified ? ' <span style="font-size:0.55rem;color:var(--yellow);vertical-align:middle">✦</span>' : '';
-
-    return `<tr onclick="openModal('${r._id}')">
-      <td class="td-customer" title="${r['Customer']||''}">${r['Customer']||'—'}</td>
-      <td class="td-mpn">${r['Original MPN']||'—'}</td>
-      <td class="td-cpn">${r['Customer PN']||'—'}</td>
-      <td class="td-desc" title="${r['Description']||''}">${r['Description']||'—'}</td>
-      <td class="td-mfr">${r['Manufacturer']||'—'}</td>
-      <td class="td-qty">${r['Quantity']||'—'}</td>
+  document.getElementById('search-tbody').innerHTML = page.map(r => {
+    const price = r.price||'';
+    const dot = r.price_updated ? '<span class="edited-dot" title="Price edited"></span>' : '';
+    return `<tr onclick="openSearchModal(${r.id})">
+      <td class="td-bold td-clip" title="${r.customer||''}">${r.customer||'—'}</td>
+      <td class="td-mono td-accent td-clip-sm">${r.mpn||'—'}</td>
+      <td class="td-mono td-blue td-clip-sm">${r.customer_pn||'—'}</td>
+      <td class="td-muted td-clip" title="${r.description||''}">${r.description||'—'}</td>
+      <td class="td-muted td-clip-sm">${r.manufacturer||'—'}</td>
+      <td class="td-mono td-bold">${r.quantity||'—'}</td>
       <td>
-        <span class="editable td-price${price?'':' empty'}"
-          onclick="event.stopPropagation();startEditPrice(event,'${r._id}','${(price||'').replace(/'/g,"\'")}')">
-          ${price ? '$'+price : '—'} <span class="edit-icon">✎</span>
-        </span>${modBadge}
+        <span class="editable td-mono ${price?'td-green':''}"
+          onclick="event.stopPropagation();startEditPrice(event,${r.id},'${(price||'').replace(/'/g,"\'")}')">
+          ${price?'$'+price:'—'} <span class="pencil">✎</span>
+        </span>${dot}
       </td>
       <td>
-        <span class="editable td-date"
-          onclick="event.stopPropagation();startEditDate(event,'${r._id}','${(date||'').replace(/'/g,"\'")}')">
-          ${date||'—'} <span class="edit-icon">✎</span>
+        <span class="editable td-mono td-purple"
+          onclick="event.stopPropagation();startEditDate(event,${r.id},'${(r.list_date||'').replace(/'/g,"\'")}')">
+          ${r.list_date||'—'} <span class="pencil">✎</span>
         </span>
       </td>
+      <td class="td-muted" style="font-size:0.68rem;">${r.email||'—'}</td>
     </tr>`;
   }).join('');
 
-  // Pagination
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
-  const pag = document.getElementById('pagination');
-  if (totalPages <= 1) { pag.innerHTML=''; return; }
+  const tp = Math.ceil(searchResults.length/PAGE);
+  const pag = document.getElementById('search-pag');
+  if(tp<=1){pag.innerHTML='';return;}
   pag.innerHTML = `
-    <button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>← Prev</button>
-    <span class="page-info">Page ${currentPage} of ${totalPages}</span>
-    <button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>Next →</button>`;
+    <button class="pag-btn" onclick="goSearchPage(${searchPage-1})" ${searchPage===1?'disabled':''}>← Prev</button>
+    <span class="pag-info">Page ${searchPage} of ${tp}</span>
+    <button class="pag-btn" onclick="goSearchPage(${searchPage+1})" ${searchPage===tp?'disabled':''}>Next →</button>`;
 }
 
-function goPage(p) {
-  currentPage = p;
-  renderResults();
-  document.querySelector('.table-wrap')?.scrollIntoView({behavior:'smooth'});
+function goSearchPage(p){ searchPage=p; renderSearch(); window.scrollTo(0,200); }
+
+function renderSearchStats(){
+  document.getElementById('search-stats').classList.remove('hidden');
+  document.getElementById('ss-count').textContent = searchResults.length.toLocaleString();
+  document.getElementById('ss-customers').textContent = [...new Set(searchResults.map(r=>r.customer))].length;
+  const qty = searchResults.reduce((a,r)=>{const q=parseFloat(r.quantity);return a+(isNaN(q)?0:q);},0);
+  document.getElementById('ss-qty').textContent = qty>0?qty.toLocaleString():'—';
+  const prices = searchResults.map(r=>parseFloat(r.price)).filter(p=>!isNaN(p));
+  const avg = prices.length?(prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2):'—';
+  document.getElementById('ss-price').textContent = avg!=='—'?'$'+avg:'—';
 }
 
-function renderStats() {
-  const strip = document.getElementById('stats-strip');
-  strip.style.display = 'flex';
-  document.getElementById('stat-count').textContent = totalCount.toLocaleString();
-  const customers = [...new Set(currentResults.map(r=>r['Customer']))].length;
-  document.getElementById('stat-customers').textContent = customers;
-  const qty = currentResults.reduce((a,r)=>{const q=parseFloat(r['Quantity']);return a+(isNaN(q)?0:q);},0);
-  document.getElementById('stat-qty').textContent = qty>0 ? qty.toLocaleString() : '—';
-  const prices = currentResults.map(r=>parseFloat(overrides[r._id]?.price??r['Price'])).filter(p=>!isNaN(p));
-  const avg = prices.length ? (prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(2) : '—';
-  document.getElementById('stat-price').textContent = avg !== '—' ? '$'+avg : '—';
-}
-
-function showState(s) {
-  ['welcome-box','loading-box','no-results-box','results-section'].forEach(id=>{
-    document.getElementById(id).classList.add('hidden');
-  });
-  const map = {welcome:'welcome-box',loading:'loading-box','no-results':'no-results-box',results:'results-section'};
+function showSearchState(s){
+  ['search-welcome','search-loading','search-empty','search-results'].forEach(id=>
+    document.getElementById(id).classList.add('hidden'));
+  const map={welcome:'search-welcome',loading:'search-loading',empty:'search-empty',results:'search-results'};
   document.getElementById(map[s])?.classList.remove('hidden');
 }
 
-// INLINE EDIT
-function startEditPrice(e, id, current) {
+// ── INLINE EDIT ───────────────────────────────────────────────────────────
+function startEditPrice(e,id,cur){
   const span = e.target.closest('.editable');
   span.outerHTML = `<span class="edit-form">
-    <input class="edit-input" id="ei-${id}" value="${current}" placeholder="e.g. 12.50"
-      onkeydown="if(event.key==='Enter')saveEdit('${id}','price');if(event.key==='Escape')renderResults()" />
-    <button class="save-btn" onclick="saveEdit('${id}','price')">✓</button>
-    <button class="cancel-btn" onclick="renderResults()">✕</button>
+    <input class="edit-input" id="ei-${id}" value="${cur}" placeholder="e.g. 12.50"
+      onkeydown="if(event.key==='Enter')saveField(${id},'price');if(event.key==='Escape')renderSearch()" />
+    <button class="save-btn" onclick="saveField(${id},'price')">✓</button>
+    <button class="cancel-btn" onclick="renderSearch()">✕</button>
   </span>`;
   document.getElementById('ei-'+id)?.focus();
 }
 
-function startEditDate(e, id, current) {
+function startEditDate(e,id,cur){
   const span = e.target.closest('.editable');
   span.outerHTML = `<span class="edit-form">
-    <input class="edit-input" id="ei-${id}" value="${current}" placeholder="YYYY-MM"
-      onkeydown="if(event.key==='Enter')saveEdit('${id}','date');if(event.key==='Escape')renderResults()" />
-    <button class="save-btn" onclick="saveEdit('${id}','date')">✓</button>
-    <button class="cancel-btn" onclick="renderResults()">✕</button>
+    <input class="edit-input" id="ei-${id}" value="${cur}" placeholder="YYYY-MM"
+      onkeydown="if(event.key==='Enter')saveField(${id},'list_date');if(event.key==='Escape')renderSearch()" />
+    <button class="save-btn" onclick="saveField(${id},'list_date')">✓</button>
+    <button class="cancel-btn" onclick="renderSearch()">✕</button>
   </span>`;
   document.getElementById('ei-'+id)?.focus();
 }
 
-function saveEdit(id, field) {
-  const val = document.getElementById('ei-'+id)?.value?.trim() || '';
-  if (!overrides[id]) overrides[id] = {};
-  overrides[id][field === 'price' ? 'price' : 'date'] = val;
-  overrides[id].modifiedAt = new Date().toLocaleString();
-
-  // Also update in currentResults
-  const r = currentResults.find(x=>x._id===id);
-  if (r) r._modified = true;
-
-  saveOverrides();
-  renderResults();
-  showToast(field==='price' ? 'Price saved ✓' : 'Date updated ✓', 'success');
+async function saveField(id,field){
+  const val = document.getElementById('ei-'+id)?.value?.trim()||'';
+  const body = {[field]:val, updated_at: new Date().toISOString()};
+  if(field==='price') body.price_updated = new Date().toISOString();
+  try {
+    const res = await api('excess_parts',{method:'PATCH',query:`?id=eq.${id}`,body,prefer:'return=minimal'});
+    if(!res.ok) throw new Error('Save failed');
+    const r = searchResults.find(x=>x.id===id);
+    if(r){r[field]=val;if(field==='price')r.price_updated=body.price_updated;}
+    renderSearch();
+    showToast(field==='price'?'Price saved ✓':'Date updated ✓','success');
+  } catch(e){ showToast('Save failed: '+e.message,'error'); renderSearch(); }
 }
 
-// MODAL
-function openModal(id) {
-  const r = currentResults.find(x=>x._id===id);
-  if (!r) return;
-  const price = overrides[id]?.price ?? r['Price'] ?? '';
-  const date  = overrides[id]?.date  ?? r['List Date'] ?? '';
-
-  document.getElementById('modal-title').textContent = r['Normalized MPN'] || r['Original MPN'] || 'PART DETAIL';
+// ── SEARCH MODAL ──────────────────────────────────────────────────────────
+function openSearchModal(id){
+  const r = searchResults.find(x=>x.id===id);
+  if(!r) return;
+  document.getElementById('modal-title').textContent = r.normalized_pn||r.mpn||'PART DETAIL';
   document.getElementById('modal-body').innerHTML = `
-    <div class="field-row"><div class="field-label">Customer</div><div class="field-value">${r['Customer']||'—'}</div></div>
-    <div class="field-row"><div class="field-label">MPN</div><div class="field-value mono">${r['Original MPN']||'—'}</div></div>
-    <div class="field-row"><div class="field-label">Customer P/N</div><div class="field-value mono">${r['Customer PN']||'—'}</div></div>
-    <div class="field-row"><div class="field-label">Normalized P/N</div><div class="field-value mono">${r['Normalized MPN']||'—'}</div></div>
-    <div class="field-row"><div class="field-label">Description</div><div class="field-value">${r['Description']||'—'}</div></div>
-    <div class="field-row"><div class="field-label">Manufacturer</div><div class="field-value">${r['Manufacturer']||'—'}</div></div>
-    <div class="field-row"><div class="field-label">Quantity</div><div class="field-value">${r['Quantity']||'—'}</div></div>
-    <div class="field-row">
-      <div class="field-label">Price (USD)</div>
-      <div class="field-value">
-        <div class="modal-edit-row">
-          <input id="modal-price-${id}" value="${price}" placeholder="Enter price…" />
-          <button class="save-btn" onclick="saveModalEdit('${id}','price')">Save</button>
-        </div>
-      </div>
-    </div>
-    <div class="field-row">
-      <div class="field-label">List Date</div>
-      <div class="field-value">
-        <div class="modal-edit-row">
-          <input id="modal-date-${id}" value="${date}" placeholder="YYYY-MM" />
-          <button class="save-btn" onclick="saveModalEdit('${id}','date')">Save</button>
-        </div>
-      </div>
-    </div>
-    <div class="field-row"><div class="field-label">Email</div><div class="field-value">${r['Customer Email']||'—'}</div></div>
-    ${r._modified ? '<div class="field-row"><div class="field-label">Last Edited</div><div class="field-value" style="color:var(--yellow);font-size:0.72rem">'+overrides[id]?.modifiedAt+'</div></div>' : ''}
+    <div class="frow"><div class="flbl">Customer</div><div class="fval">${r.customer||'—'}</div></div>
+    <div class="frow"><div class="flbl">MPN</div><div class="fval mono">${r.mpn||'—'}</div></div>
+    <div class="frow"><div class="flbl">Customer P/N</div><div class="fval mono">${r.customer_pn||'—'}</div></div>
+    <div class="frow"><div class="flbl">Description</div><div class="fval">${r.description||'—'}</div></div>
+    <div class="frow"><div class="flbl">Manufacturer</div><div class="fval">${r.manufacturer||'—'}</div></div>
+    <div class="frow"><div class="flbl">Quantity</div><div class="fval">${r.quantity||'—'}</div></div>
+    <div class="frow"><div class="flbl">Email</div><div class="fval">
+      <div class="medit"><input id="m-email-${id}" value="${r.email||''}" placeholder="email…" /><button class="msave" onclick="saveModalField(${id},'email','m-email-${id}','excess_parts')">Save</button></div>
+    </div></div>
+    <div class="frow"><div class="flbl">Price (USD)</div><div class="fval">
+      <div class="medit"><input id="m-price-${id}" value="${r.price||''}" placeholder="Enter price…" /><button class="msave" onclick="saveModalField(${id},'price','m-price-${id}','excess_parts')">Save</button></div>
+      ${r.price_updated?`<div class="mts">Last updated: ${new Date(r.price_updated).toLocaleString()}</div>`:''}
+    </div></div>
+    <div class="frow"><div class="flbl">List Date</div><div class="fval">
+      <div class="medit"><input id="m-date-${id}" value="${r.list_date||''}" placeholder="YYYY-MM" /><button class="msave" onclick="saveModalField(${id},'list_date','m-date-${id}','excess_parts')">Save</button></div>
+    </div></div>
+    <div class="frow"><div class="flbl">Notes</div><div class="fval">
+      <div class="medit"><textarea id="m-notes-${id}" placeholder="Your notes…">${r.my_notes||''}</textarea><button class="msave" onclick="saveModalField(${id},'my_notes','m-notes-${id}','excess_parts')">Save</button></div>
+    </div></div>
   `;
   document.getElementById('modal-overlay').classList.add('open');
 }
 
-function saveModalEdit(id, field) {
-  const inputId = field==='price' ? `modal-price-${id}` : `modal-date-${id}`;
-  const val = document.getElementById(inputId)?.value?.trim() || '';
-  if (!overrides[id]) overrides[id] = {};
-  overrides[id][field==='price'?'price':'date'] = val;
-  overrides[id].modifiedAt = new Date().toLocaleString();
-  const r = currentResults.find(x=>x._id===id);
-  if (r) r._modified = true;
-  saveOverrides();
-  renderResults();
-  showToast(field==='price' ? 'Price saved ✓' : 'Date updated ✓', 'success');
+async function saveModalField(id,field,inputId,table){
+  const val = document.getElementById(inputId)?.value?.trim()||'';
+  const body = {[field]:val,updated_at:new Date().toISOString()};
+  if(field==='price') body.price_updated = new Date().toISOString();
+  const btn = document.querySelector(`#modal-body [onclick*="${inputId}"]`);
+  if(btn){btn.textContent='…';btn.disabled=true;}
+  try {
+    const res = await api(table,{method:'PATCH',query:`?id=eq.${id}`,body,prefer:'return=minimal'});
+    if(!res.ok) throw new Error('Failed');
+    if(table==='excess_parts'){
+      const r = searchResults.find(x=>x.id===id);
+      if(r){r[field]=val;if(field==='price')r.price_updated=body.price_updated;}
+    }
+    if(btn){btn.textContent='✓';btn.style.background='var(--accent2)';}
+    showToast('Saved ✓','success');
+  } catch(e){
+    if(btn){btn.textContent='Save';btn.disabled=false;}
+    showToast('Failed: '+e.message,'error');
+  }
 }
 
-function closeModal(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
-}
-function closeModalDirect() {
-  document.getElementById('modal-overlay').classList.remove('open');
+// ── DEMAND ────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('d-date').value = today();
+  document.getElementById('i-date').value = today();
+});
+
+async function saveDemand(){
+  const mpn = document.getElementById('d-mpn').value.trim();
+  const cpn = document.getElementById('d-cpn').value.trim();
+  if(!mpn && !cpn){ showToast('Enter at least an MPN or Customer P/N','error'); return; }
+  const body = {
+    customer: document.getElementById('d-customer').value.trim(),
+    email: document.getElementById('d-email').value.trim(),
+    mpn, normalized_pn: norm(mpn||cpn),
+    customer_pn: cpn,
+    manufacturer: document.getElementById('d-mfr').value.trim(),
+    description: document.getElementById('d-desc').value.trim(),
+    quantity_needed: document.getElementById('d-qty').value.trim(),
+    target_price: document.getElementById('d-price').value.trim(),
+    date_received: document.getElementById('d-date').value || today(),
+    status: document.getElementById('d-status').value,
+    notes: document.getElementById('d-notes').value.trim(),
+  };
+  try {
+    const res = await api('demand',{method:'POST',body,prefer:'return=minimal'});
+    if(!res.ok) throw new Error('Save failed');
+    showToast('Demand request saved ✓','success');
+    clearDemandForm();
+    loadDemand();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
 }
 
-// TOAST
-let toastTimer;
-function showToast(msg, type='success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 2800);
+async function loadDemand(){
+  const res = await api('demand',{query:'?order=created_at.desc&limit=50'});
+  const data = await res.json();
+  const el = document.getElementById('demand-list');
+  if(!data.length){
+    el.innerHTML='<div class="state-box"><h3>No requests yet</h3><p>Log your first demand request using the form.</p></div>';
+    return;
+  }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Customer</th><th>MPN</th><th>Cust P/N</th><th>Qty</th><th>Target $</th><th>Date</th><th>Status</th></tr></thead>
+    <tbody>${data.map(r=>`<tr onclick="openDemandModal(${r.id})" style="cursor:pointer">
+      <td class="td-bold td-clip">${r.customer||'—'}</td>
+      <td class="td-mono td-accent td-clip-sm">${r.mpn||'—'}</td>
+      <td class="td-mono td-blue td-clip-sm">${r.customer_pn||'—'}</td>
+      <td class="td-mono">${r.quantity_needed||'—'}</td>
+      <td class="td-mono td-green">${r.target_price?'$'+r.target_price:'—'}</td>
+      <td class="td-mono td-purple">${r.date_received||'—'}</td>
+      <td>${statusBadge(r.status)}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+  window._demandData = data;
 }
 
-// ESC to close modal
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeModalDirect(); });
+function openDemandModal(id){
+  const r = window._demandData?.find(x=>x.id===id);
+  if(!r) return;
+  document.getElementById('modal-title').textContent = r.mpn||r.customer_pn||'DEMAND DETAIL';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="frow"><div class="flbl">Customer</div><div class="fval">${r.customer||'—'}</div></div>
+    <div class="frow"><div class="flbl">Email</div><div class="fval">${r.email||'—'}</div></div>
+    <div class="frow"><div class="flbl">MPN</div><div class="fval mono">${r.mpn||'—'}</div></div>
+    <div class="frow"><div class="flbl">Customer P/N</div><div class="fval mono">${r.customer_pn||'—'}</div></div>
+    <div class="frow"><div class="flbl">Manufacturer</div><div class="fval">${r.manufacturer||'—'}</div></div>
+    <div class="frow"><div class="flbl">Description</div><div class="fval">${r.description||'—'}</div></div>
+    <div class="frow"><div class="flbl">Qty Needed</div><div class="fval">${r.quantity_needed||'—'}</div></div>
+    <div class="frow"><div class="flbl">Target Price</div><div class="fval" style="color:var(--accent2)">${r.target_price?'$'+r.target_price:'—'}</div></div>
+    <div class="frow"><div class="flbl">Date</div><div class="fval">${r.date_received||'—'}</div></div>
+    <div class="frow"><div class="flbl">Status</div><div class="fval">
+      <select id="dm-status-${id}" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:4px;font-size:0.78rem;">
+        ${['Open','Quoted','Filled','Lost'].map(s=>`<option value="${s}" ${r.status===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+      <button class="msave" style="margin-left:8px;" onclick="saveDemandStatus(${id})">Update</button>
+    </div></div>
+    <div class="frow"><div class="flbl">Notes</div><div class="fval">
+      <div class="medit"><textarea id="dm-notes-${id}">${r.notes||''}</textarea><button class="msave" onclick="saveModalField(${id},'notes','dm-notes-${id}','demand')">Save</button></div>
+    </div></div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+async function saveDemandStatus(id){
+  const val = document.getElementById('dm-status-'+id).value;
+  try {
+    const res = await api('demand',{method:'PATCH',query:`?id=eq.${id}`,body:{status:val,updated_at:new Date().toISOString()},prefer:'return=minimal'});
+    if(!res.ok) throw new Error('Failed');
+    showToast('Status updated ✓','success');
+    loadDemand();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+function clearDemandForm(){
+  ['d-customer','d-email','d-mpn','d-cpn','d-mfr','d-desc','d-qty','d-price','d-notes'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('d-date').value = today();
+  document.getElementById('d-status').value = 'Open';
+  document.getElementById('d-norm-preview').textContent='';
+}
+
+// ── PART INTEL ────────────────────────────────────────────────────────────
+async function saveIntel(){
+  const mpn = document.getElementById('i-mpn').value.trim();
+  const cpn = document.getElementById('i-cpn').value.trim();
+  if(!mpn && !cpn){ showToast('Enter at least an MPN or Customer P/N','error'); return; }
+  const body = {
+    source: document.getElementById('i-source').value.trim(),
+    email: document.getElementById('i-email').value.trim(),
+    mpn, normalized_pn: norm(mpn||cpn),
+    customer_pn: cpn,
+    manufacturer: document.getElementById('i-mfr').value.trim(),
+    description: document.getElementById('i-desc').value.trim(),
+    date_received: document.getElementById('i-date').value || today(),
+    notes: document.getElementById('i-notes').value.trim(),
+  };
+  try {
+    const res = await api('part_intel',{method:'POST',body,prefer:'return=minimal'});
+    if(!res.ok) throw new Error('Save failed');
+    showToast('Part intel saved ✓','success');
+    clearIntelForm();
+    loadIntel();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function loadIntel(){
+  const res = await api('part_intel',{query:'?order=created_at.desc&limit=50'});
+  const data = await res.json();
+  const el = document.getElementById('intel-list');
+  if(!data.length){
+    el.innerHTML='<div class="state-box"><h3>No intel yet</h3><p>Log your first part intel using the form.</p></div>';
+    return;
+  }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Source</th><th>MPN</th><th>Cust P/N</th><th>Manufacturer</th><th>Description</th><th>Date</th></tr></thead>
+    <tbody>${data.map(r=>`<tr style="cursor:pointer">
+      <td class="td-bold td-clip">${r.source||'—'}</td>
+      <td class="td-mono td-accent td-clip-sm">${r.mpn||'—'}</td>
+      <td class="td-mono td-blue td-clip-sm">${r.customer_pn||'—'}</td>
+      <td class="td-muted td-clip-sm">${r.manufacturer||'—'}</td>
+      <td class="td-muted td-clip">${r.description||'—'}</td>
+      <td class="td-mono td-purple">${r.date_received||'—'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function clearIntelForm(){
+  ['i-source','i-email','i-mpn','i-cpn','i-mfr','i-desc','i-notes'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('i-date').value = today();
+  document.getElementById('i-norm-preview').textContent='';
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────
+function closeModal(e){ if(e.target===document.getElementById('modal-overlay')) closeModalDirect(); }
+function closeModalDirect(){ document.getElementById('modal-overlay').classList.remove('open'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModalDirect(); });
+
+// ── TOAST ─────────────────────────────────────────────────────────────────
+let tt;
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+type;
+  clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),3000);
+}
 </script>
 </body>
 </html>
