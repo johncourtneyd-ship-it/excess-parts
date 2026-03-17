@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.52</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.54</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -872,9 +872,13 @@ function openSearchModal(id, src){
   document.getElementById('modal-body').innerHTML = `
     <div class="frow"><div class="flbl">Customer</div><div class="fval">${r.customer||'—'}</div></div>
     <div class="frow"><div class="flbl">MPN</div><div class="fval mono">${r.mpn||'—'}</div></div>
-    <div class="frow"><div class="flbl">Customer P/N</div><div class="fval mono">${r.customer_pn||'—'}</div></div>
+    <div class="frow"><div class="flbl">Customer P/N</div><div class="fval">
+      <div class="medit"><input id="m-cpn-${id}" value="${r.customer_pn||''}" placeholder="Customer part number" /><button class="msave" onclick="saveModalField(${id},'customer_pn','m-cpn-${id}','excess_parts')">Save</button></div>
+    </div></div>
     <div class="frow"><div class="flbl">Description</div><div class="fval">${r.description||'—'}</div></div>
-    <div class="frow"><div class="flbl">Manufacturer</div><div class="fval">${r.manufacturer||'—'}</div></div>
+    <div class="frow"><div class="flbl">Manufacturer</div><div class="fval">
+      <div class="medit"><input id="m-mfr-${id}" value="${r.manufacturer||''}" placeholder="e.g. Broadcom" /><button class="msave" onclick="saveModalField(${id},'manufacturer','m-mfr-${id}','excess_parts')">Save</button></div>
+    </div></div>
     <div class="frow"><div class="flbl">Quantity</div><div class="fval">
       <div class="medit"><input id="m-qty-${id}" value="${r.quantity||''}" placeholder="e.g. 500" /><button class="msave" onclick="saveModalField(${id},'quantity','m-qty-${id}','excess_parts')">Save</button></div>
     </div></div>
@@ -986,8 +990,12 @@ function openDemandModal(id){
     <div class="frow"><div class="flbl">Customer</div><div class="fval">${r.customer||'—'}</div></div>
     <div class="frow"><div class="flbl">Email</div><div class="fval">${r.email||'—'}</div></div>
     <div class="frow"><div class="flbl">MPN</div><div class="fval mono">${r.mpn||'—'}</div></div>
-    <div class="frow"><div class="flbl">Customer P/N</div><div class="fval mono">${r.customer_pn||'—'}</div></div>
-    <div class="frow"><div class="flbl">Manufacturer</div><div class="fval">${r.manufacturer||'—'}</div></div>
+    <div class="frow"><div class="flbl">Customer P/N</div><div class="fval">
+      <div class="medit"><input id="m-cpn-${id}" value="${r.customer_pn||''}" placeholder="Customer part number" /><button class="msave" onclick="saveModalField(${id},'customer_pn','m-cpn-${id}','excess_parts')">Save</button></div>
+    </div></div>
+    <div class="frow"><div class="flbl">Manufacturer</div><div class="fval">
+      <div class="medit"><input id="m-mfr-${id}" value="${r.manufacturer||''}" placeholder="e.g. Broadcom" /><button class="msave" onclick="saveModalField(${id},'manufacturer','m-mfr-${id}','excess_parts')">Save</button></div>
+    </div></div>
     <div class="frow"><div class="flbl">Description</div><div class="fval">${r.description||'—'}</div></div>
     <div class="frow"><div class="flbl">Qty Needed</div><div class="fval">${r.quantity_needed||'—'}</div></div>
     <div class="frow"><div class="flbl">Target Price</div><div class="fval" style="color:var(--accent2)">${r.target_price?'$'+parseFloat(r.target_price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'—'}</div></div>
