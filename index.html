@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.74</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.71</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -250,38 +250,68 @@ tbody td{padding:9px 12px;vertical-align:middle;}
     <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
 
       <div class="form-card" style="flex:0 0 auto;">
-        <h3>Log Demand Requests</h3>
-
-        <!-- SHARED HEADER -->
-        <div class="form-grid" style="margin-bottom:16px;">
+        <h3>Log New Demand Request</h3>
+        <div class="form-grid">
           <div class="fg">
             <label>Customer / Company</label>
             <div class="autocomplete-wrap">
-              <input type="text" id="d-customer" placeholder="e.g. Acme Corp" autocomplete="off"
-                oninput="acSearch(this,'d-customer-list','customers')"
-                onkeydown="acKey(event,'d-customer-list')"
-                onfocus="acSearch(this,'d-customer-list','customers')"
-                onblur="setTimeout(()=>document.getElementById('d-customer-list').innerHTML='',200)" />
-              <div class="autocomplete-list" id="d-customer-list"></div>
-            </div>
+            <input type="text" id="d-customer" placeholder="e.g. Acme Corp" autocomplete="off"
+              oninput="acSearch(this,'d-customer-list','customers')" 
+              onkeydown="acKey(event,'d-customer-list')"
+              onfocus="acSearch(this,'d-customer-list','customers')"
+              onblur="setTimeout(()=>document.getElementById('d-customer-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="d-customer-list"></div>
+          </div>
           </div>
           <div class="fg">
             <label>Email</label>
             <div class="autocomplete-wrap">
-              <input type="text" id="d-email" placeholder="contact@company.com" autocomplete="off"
-                oninput="acSearch(this,'d-email-list','emails')"
-                onkeydown="acKey(event,'d-email-list')"
-                onfocus="acSearch(this,'d-email-list','emails')"
-                onblur="setTimeout(()=>document.getElementById('d-email-list').innerHTML='',200)" />
-              <div class="autocomplete-list" id="d-email-list"></div>
-            </div>
+            <input type="text" id="d-email" placeholder="contact@company.com" autocomplete="off"
+              oninput="acSearch(this,'d-email-list','emails')"
+              onkeydown="acKey(event,'d-email-list')"
+              onfocus="acSearch(this,'d-email-list','emails')"
+              onblur="setTimeout(()=>document.getElementById('d-email-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="d-email-list"></div>
+          </div>
+          </div>
+          <div class="fg">
+            <label>MPN</label>
+            <input type="text" id="d-mpn" placeholder="Manufacturer Part Number" oninput="normPreview('d-mpn','d-norm-preview')" />
+            <div class="norm-preview" id="d-norm-preview"></div>
+          </div>
+          <div class="fg">
+            <label>Customer P/N</label>
+            <input type="text" id="d-cpn" placeholder="Their internal part number" />
+          </div>
+          <div class="fg">
+            <label>Manufacturer</label>
+            <div class="autocomplete-wrap">
+            <input type="text" id="d-mfr" placeholder="e.g. Broadcom" autocomplete="off"
+              oninput="acSearch(this,'d-mfr-list','manufacturers')"
+              onkeydown="acKey(event,'d-mfr-list')"
+              onfocus="acSearch(this,'d-mfr-list','manufacturers')"
+              onblur="setTimeout(()=>document.getElementById('d-mfr-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="d-mfr-list"></div>
+          </div>
+          </div>
+          <div class="fg">
+            <label>Description</label>
+            <input type="text" id="d-desc" placeholder="Part description" />
+          </div>
+          <div class="fg">
+            <label>Qty Needed</label>
+            <input type="text" id="d-qty" placeholder="e.g. 500" />
+          </div>
+          <div class="fg">
+            <label>Target Price (USD)</label>
+            <input type="text" id="d-price" placeholder="e.g. 25.00" />
           </div>
           <div class="fg">
             <label>Date Received</label>
-            <input type="text" id="d-date" placeholder="MM/DD/YYYY" />
+            <input type="date" id="d-date" />
           </div>
           <div class="fg">
-            <label>Status (applies to all)</label>
+            <label>Status</label>
             <select id="d-status">
               <option value="Open">Open</option>
               <option value="Quoted">Quoted</option>
@@ -290,25 +320,15 @@ tbody td{padding:9px 12px;vertical-align:middle;}
             </select>
           </div>
         </div>
-
-        <!-- COLUMN HEADERS -->
-        <div style="display:grid;grid-template-columns:1fr 1fr 70px 80px 1fr 32px;gap:8px;margin-bottom:6px;padding:0 2px;">
-          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">MPN</div>
-          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">Customer P/N</div>
-          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">Qty</div>
-          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">Target $</div>
-          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">Manufacturer</div>
-          <div></div>
+        <div class="fg" style="margin-bottom:16px;">
+          <label>Notes</label>
+          <textarea id="d-notes" placeholder="Any additional notes…"></textarea>
         </div>
-
-        <!-- ROWS -->
-        <div id="d-rows"></div>
-
-        <div class="form-actions" style="margin-top:12px;">
-          <button class="btn-primary" onclick="saveDemandItems()">Save All Requests</button>
-          <button class="btn-ghost" onclick="addDemandRow()">+ Add Row</button>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="saveDemand()">Save Demand Request</button>
           <button class="btn-ghost" onclick="clearDemandForm()">Clear</button>
         </div>
+      </div>
 
       <div style="flex:1;min-width:300px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -327,60 +347,104 @@ tbody td{padding:9px 12px;vertical-align:middle;}
     </div>
   </div>
 
+  <!-- ═══ DELETE BATCH MODAL ═══ -->
+  <div class="overlay" id="delete-batch-overlay" onclick="closeDeleteBatch(event)">
+    <div class="modal" style="max-width:480px;">
+      <div class="modal-hdr">
+        <h3 style="color:var(--accent3);">⚠ Delete Batch</h3>
+        <button class="modal-x" onclick="document.getElementById('delete-batch-overlay').classList.remove('open')">✕</button>
+      </div>
+      <div class="modal-bdy">
+        <p style="font-size:0.82rem;color:var(--text2);margin-bottom:16px;line-height:1.6;">
+          This will permanently delete all records with the specified Batch ID from <strong>all tables</strong> (Excess, Demand, Part Intel).
+        </p>
+        <div class="fg" style="margin-bottom:16px;">
+          <label>Batch ID to Delete</label>
+          <input type="text" id="delete-batch-input" placeholder="e.g. Curtiss-Wright-20260317-A3F2"
+            style="background:var(--bg);border:1px solid var(--accent3);color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:8px 12px;border-radius:4px;outline:none;width:100%;" />
+        </div>
+        <div id="delete-batch-preview" class="hidden" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-family:var(--mono);font-size:0.75rem;">
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-ghost" style="flex:1;" onclick="document.getElementById('delete-batch-overlay').classList.remove('open')">Cancel</button>
+          <button id="delete-batch-preview-btn" style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-family:var(--display);font-size:0.82rem;font-weight:600;padding:10px;border-radius:var(--radius);cursor:pointer;" onclick="previewBatchDelete()">
+            🔍 Preview
+          </button>
+          <button id="delete-batch-confirm-btn" class="hidden" style="flex:1;background:var(--accent3);border:none;color:white;font-family:var(--display);font-size:0.82rem;font-weight:700;padding:10px;border-radius:var(--radius);cursor:pointer;" onclick="confirmBatchDelete()">
+            🗑 Confirm Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══ PART INTEL TAB ═══ -->
   <div id="pane-intel" class="hidden">
     <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
 
       <div class="form-card" style="flex:0 0 auto;">
-        <h3>Log Part Intel</h3>
-
-        <!-- SHARED HEADER -->
-        <div class="form-grid" style="margin-bottom:16px;">
+        <h3>Log Part Information</h3>
+        <div class="form-grid">
           <div class="fg">
             <label>Source / Company</label>
             <div class="autocomplete-wrap">
-              <input type="text" id="i-source" placeholder="Who gave you this info" autocomplete="off"
-                oninput="acSearch(this,'i-source-list','customers')"
-                onkeydown="acKey(event,'i-source-list')"
-                onfocus="acSearch(this,'i-source-list','customers')"
-                onblur="setTimeout(()=>document.getElementById('i-source-list').innerHTML='',200)" />
-              <div class="autocomplete-list" id="i-source-list"></div>
-            </div>
+            <input type="text" id="i-source" placeholder="Who gave you this info" autocomplete="off"
+              oninput="acSearch(this,'i-source-list','customers')"
+              onkeydown="acKey(event,'i-source-list')"
+              onfocus="acSearch(this,'i-source-list','customers')"
+              onblur="setTimeout(()=>document.getElementById('i-source-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="i-source-list"></div>
+          </div>
           </div>
           <div class="fg">
             <label>Email</label>
             <div class="autocomplete-wrap">
-              <input type="text" id="i-email" placeholder="contact@company.com" autocomplete="off"
-                oninput="acSearch(this,'i-email-list','emails')"
-                onkeydown="acKey(event,'i-email-list')"
-                onfocus="acSearch(this,'i-email-list','emails')"
-                onblur="setTimeout(()=>document.getElementById('i-email-list').innerHTML='',200)" />
-              <div class="autocomplete-list" id="i-email-list"></div>
-            </div>
+            <input type="text" id="i-email" placeholder="contact@company.com" autocomplete="off"
+              oninput="acSearch(this,'i-email-list','emails')"
+              onkeydown="acKey(event,'i-email-list')"
+              onfocus="acSearch(this,'i-email-list','emails')"
+              onblur="setTimeout(()=>document.getElementById('i-email-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="i-email-list"></div>
+          </div>
+          </div>
+          <div class="fg">
+            <label>MPN</label>
+            <input type="text" id="i-mpn" placeholder="Manufacturer Part Number" oninput="normPreview('i-mpn','i-norm-preview')" />
+            <div class="norm-preview" id="i-norm-preview"></div>
+          </div>
+          <div class="fg">
+            <label>Customer P/N</label>
+            <input type="text" id="i-cpn" placeholder="Internal part number" />
+          </div>
+          <div class="fg">
+            <label>Manufacturer</label>
+            <div class="autocomplete-wrap">
+            <input type="text" id="i-mfr" placeholder="e.g. Texas Instruments" autocomplete="off"
+              oninput="acSearch(this,'i-mfr-list','manufacturers')"
+              onkeydown="acKey(event,'i-mfr-list')"
+              onfocus="acSearch(this,'i-mfr-list','manufacturers')"
+              onblur="setTimeout(()=>document.getElementById('i-mfr-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="i-mfr-list"></div>
+          </div>
+          </div>
+          <div class="fg">
+            <label>Description</label>
+            <input type="text" id="i-desc" placeholder="Part description" />
           </div>
           <div class="fg">
             <label>Date Received</label>
-            <input type="text" id="i-date" placeholder="MM/DD/YYYY" />
+            <input type="date" id="i-date" />
           </div>
         </div>
-
-        <!-- COLUMN HEADERS -->
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 32px;gap:8px;margin-bottom:6px;padding:0 2px;">
-          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">MPN</div>
-          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">Customer P/N</div>
-          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">Manufacturer</div>
-          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">Description</div>
-          <div></div>
+        <div class="fg" style="margin-bottom:16px;">
+          <label>Notes</label>
+          <textarea id="i-notes" placeholder="Any additional notes…"></textarea>
         </div>
-
-        <!-- ROWS -->
-        <div id="i-rows"></div>
-
-        <div class="form-actions" style="margin-top:12px;">
-          <button class="btn-primary" onclick="saveIntelItems()">Save All Intel</button>
-          <button class="btn-ghost" onclick="addIntelRow()">+ Add Row</button>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="saveIntel()">Save Part Intel</button>
           <button class="btn-ghost" onclick="clearIntelForm()">Clear</button>
         </div>
+      </div>
 
       <div style="flex:1;min-width:300px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -591,38 +655,6 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 </div>
 
-
-  <!-- ═══ DELETE BATCH MODAL ═══ -->
-  <div class="overlay" id="delete-batch-overlay" onclick="closeDeleteBatch(event)">
-    <div class="modal" style="max-width:480px;">
-      <div class="modal-hdr">
-        <h3 style="color:var(--accent3);">⚠ Delete Batch</h3>
-        <button class="modal-x" onclick="document.getElementById('delete-batch-overlay').classList.remove('open')">✕</button>
-      </div>
-      <div class="modal-bdy">
-        <p style="font-size:0.82rem;color:var(--text2);margin-bottom:16px;line-height:1.6;">
-          This will permanently delete all records with the specified Batch ID from <strong>all tables</strong> (Excess, Demand, Part Intel).
-        </p>
-        <div class="fg" style="margin-bottom:16px;">
-          <label>Batch ID to Delete</label>
-          <input type="text" id="delete-batch-input" placeholder="e.g. Curtiss-Wright-20260317-A3F2"
-            style="background:var(--bg);border:1px solid var(--accent3);color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:8px 12px;border-radius:4px;outline:none;width:100%;" />
-        </div>
-        <div id="delete-batch-preview" class="hidden" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-family:var(--mono);font-size:0.75rem;">
-        </div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn-ghost" style="flex:1;" onclick="document.getElementById('delete-batch-overlay').classList.remove('open')">Cancel</button>
-          <button id="delete-batch-preview-btn" style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-family:var(--display);font-size:0.82rem;font-weight:600;padding:10px;border-radius:var(--radius);cursor:pointer;" onclick="previewBatchDelete()">
-            🔍 Preview
-          </button>
-          <button id="delete-batch-confirm-btn" class="hidden" style="flex:1;background:var(--accent3);border:none;color:white;font-family:var(--display);font-size:0.82rem;font-weight:700;padding:10px;border-radius:var(--radius);cursor:pointer;" onclick="confirmBatchDelete()">
-            🗑 Confirm Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
 <!-- MODAL -->
 <div class="overlay" id="modal-overlay" onclick="closeModal(event)">
   <div class="modal">
@@ -707,8 +739,8 @@ function switchTab(t){
     document.getElementById('pane-'+x).classList.toggle('hidden',x!==t);
     document.getElementById('tab-'+x).classList.toggle('active',x===t);
   });
-  if(t==='demand'){ loadDemand(); if(document.getElementById('d-rows') && document.getElementById('d-rows').children.length===0){dRowCount=0;for(var i=0;i<5;i++) addDemandRow();} }
-  if(t==='intel'){ loadIntel(); if(document.getElementById('i-rows') && document.getElementById('i-rows').children.length===0){iRowCount=0;for(var i=0;i<5;i++) addIntelRow();} }
+  if(t==='demand') loadDemand();
+  if(t==='intel') loadIntel();
   if(t==='upload') { 
     document.getElementById('ul-date').value = new Date().toISOString().slice(0,7);
     const d = new Date();
@@ -1005,10 +1037,8 @@ async function saveModalField(id,field,inputId,table){
 
 // ── DEMAND ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
-  var d = new Date();
-  var td = (d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getDate().toString().padStart(2,'0')+'/'+d.getFullYear();
-  var dd = document.getElementById('d-date'); if(dd) dd.value = td;
-  var id = document.getElementById('i-date'); if(id) id.value = td;
+  document.getElementById('d-date').value = today();
+  document.getElementById('i-date').value = today();
 });
 
 function startEditDemandField(e, id, field, cur){
@@ -1034,66 +1064,33 @@ async function saveDemandField(id, field){
   } catch(e){ showToast('Save failed: '+e.message,'error'); loadDemand(); }
 }
 
-var dRowCount = 0;
-
-function addDemandRow(){
-  dRowCount++;
-  var id = dRowCount;
-  var row = document.createElement('div');
-  row.id = 'dr-'+id;
-  row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 70px 80px 1fr 32px;gap:8px;margin-bottom:6px;';
-  var s = 'background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.78rem;padding:6px 10px;border-radius:4px;outline:none;width:100%;box-sizing:border-box;';
-  var fields = [{i:'d-mpn-'+id,p:'MPN'},{i:'d-cpn-'+id,p:'Cust P/N'},{i:'d-qty-'+id,p:'Qty'},{i:'d-price-'+id,p:'Target $'},{i:'d-mfr-'+id,p:'Manufacturer'}];
-  fields.forEach(function(f){
-    var inp = document.createElement('input');
-    inp.type='text'; inp.id=f.i; inp.placeholder=f.p; inp.style.cssText=s;
-    inp.addEventListener('focus',function(){inp.style.borderColor='var(--accent)';});
-    inp.addEventListener('blur',function(){inp.style.borderColor='var(--border)';});
-    row.appendChild(inp);
-  });
-  var btn = document.createElement('button');
-  btn.innerHTML='✕';
-  btn.style.cssText='background:transparent;border:1px solid var(--border);color:var(--text3);border-radius:4px;cursor:pointer;font-size:0.75rem;';
-  btn.onclick=function(){row.remove();};
-  row.appendChild(btn);
-  document.getElementById('d-rows').appendChild(row);
-}
-
-async function saveDemandItems(){
-  var customer = document.getElementById('d-customer').value.trim();
-  var email = document.getElementById('d-email').value.trim();
-  var d2 = new Date();
-  var today = (d2.getMonth()+1).toString().padStart(2,'0')+'/'+d2.getDate().toString().padStart(2,'0')+'/'+d2.getFullYear();
-  var dateReceived = document.getElementById('d-date').value.trim() || today;
-  var status = document.getElementById('d-status').value;
-  var batchId = 'manual-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.random().toString(36).slice(2,6).toUpperCase();
-  var rows = document.getElementById('d-rows').querySelectorAll('[id^="dr-"]');
-  var records = [];
-  rows.forEach(function(row){
-    var id = row.id.replace('dr-','');
-    var mpn = (document.getElementById('d-mpn-'+id)||{value:''}).value.trim();
-    var cpn = (document.getElementById('d-cpn-'+id)||{value:''}).value.trim();
-    if(!mpn && !cpn) return;
-    records.push({
-      customer: customer, email: email,
-      mpn: mpn, normalized_pn: norm(mpn||cpn), customer_pn: cpn,
-      manufacturer: (document.getElementById('d-mfr-'+id)||{value:''}).value.trim(),
-      quantity_needed: (document.getElementById('d-qty-'+id)||{value:''}).value.trim(),
-      target_price: (document.getElementById('d-price-'+id)||{value:''}).value.trim(),
-      date_received: dateReceived, status: status, batch_id: batchId,
-    });
-  });
-  if(!records.length){showToast('No items to save — fill in at least one row','error');return;}
+async function saveDemand(){
+  const mpn = document.getElementById('d-mpn').value.trim();
+  const cpn = document.getElementById('d-cpn').value.trim();
+  if(!mpn && !cpn){ showToast('Enter at least an MPN or Customer P/N','error'); return; }
+  const body = {
+    customer: document.getElementById('d-customer').value.trim(),
+    email: document.getElementById('d-email').value.trim(),
+    mpn, normalized_pn: norm(mpn||cpn),
+    customer_pn: cpn,
+    manufacturer: document.getElementById('d-mfr').value.trim(),
+    description: document.getElementById('d-desc').value.trim(),
+    quantity_needed: document.getElementById('d-qty').value.trim(),
+    target_price: document.getElementById('d-price').value.trim(),
+    date_received: document.getElementById('d-date').value || today(),
+    status: document.getElementById('d-status').value,
+    notes: document.getElementById('d-notes').value.trim(),
+    batch_id: 'manual-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.random().toString(36).slice(2,6).toUpperCase(),
+  };
   try {
-    var res = await api('demand',{method:'POST',body:records,prefer:'return=minimal'});
+    const res = await api('demand',{method:'POST',body,prefer:'return=minimal'});
     if(!res.ok) throw new Error('Save failed');
-    showToast(records.length+' demand request'+(records.length>1?'s':'')+' saved ✓','success');
+    showToast('Demand request saved ✓','success');
     clearDemandForm();
     loadDemand();
-  } catch(e){showToast('Error: '+e.message,'error');}
+  } catch(e){ showToast('Error: '+e.message,'error'); }
 }
 
-async function saveDemand(){ await saveDemandItems(); }
 async function loadDemand(){
   const res = await api('demand',{query:'?order=created_at.desc&limit=50'});
   const data = await res.json();
@@ -1180,72 +1177,39 @@ async function saveDemandStatus(id){
 }
 
 function clearDemandForm(){
-  ['d-customer','d-email','d-date'].forEach(function(id){
-    var el=document.getElementById(id); if(el) el.value='';
+  ['d-customer','d-email','d-mpn','d-cpn','d-mfr','d-desc','d-qty','d-price','d-notes'].forEach(id=>{
+    document.getElementById(id).value='';
   });
-  var ds=document.getElementById('d-status'); if(ds) ds.value='Open';
-  var dr=document.getElementById('d-rows'); if(dr){dr.innerHTML=''; dRowCount=0; for(var i=0;i<5;i++) addDemandRow();}
+  document.getElementById('d-date').value = today();
+  document.getElementById('d-status').value = 'Open';
+  document.getElementById('d-norm-preview').textContent='';
 }
 
 // ── PART INTEL ────────────────────────────────────────────────────────────
-var iRowCount = 0;
-
-function addIntelRow(){
-  iRowCount++;
-  var id = iRowCount;
-  var row = document.createElement('div');
-  row.id = 'ir-'+id;
-  row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr 1fr 32px;gap:8px;margin-bottom:6px;';
-  var s = 'background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.78rem;padding:6px 10px;border-radius:4px;outline:none;width:100%;box-sizing:border-box;';
-  var fields = [{i:'i-mpn-'+id,p:'MPN'},{i:'i-cpn-'+id,p:'Cust P/N'},{i:'i-mfr-'+id,p:'Manufacturer'},{i:'i-desc-'+id,p:'Description'}];
-  fields.forEach(function(f){
-    var inp = document.createElement('input');
-    inp.type='text'; inp.id=f.i; inp.placeholder=f.p; inp.style.cssText=s;
-    inp.addEventListener('focus',function(){inp.style.borderColor='var(--accent)';});
-    inp.addEventListener('blur',function(){inp.style.borderColor='var(--border)';});
-    row.appendChild(inp);
-  });
-  var btn = document.createElement('button');
-  btn.innerHTML='✕';
-  btn.style.cssText='background:transparent;border:1px solid var(--border);color:var(--text3);border-radius:4px;cursor:pointer;font-size:0.75rem;';
-  btn.onclick=function(){row.remove();};
-  row.appendChild(btn);
-  document.getElementById('i-rows').appendChild(row);
-}
-
-async function saveIntelItems(){
-  var source = document.getElementById('i-source').value.trim();
-  var email = document.getElementById('i-email').value.trim();
-  var d2 = new Date();
-  var today = (d2.getMonth()+1).toString().padStart(2,'0')+'/'+d2.getDate().toString().padStart(2,'0')+'/'+d2.getFullYear();
-  var dateReceived = document.getElementById('i-date').value.trim() || today;
-  var batchId = 'manual-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.random().toString(36).slice(2,6).toUpperCase();
-  var rows = document.getElementById('i-rows').querySelectorAll('[id^="ir-"]');
-  var records = [];
-  rows.forEach(function(row){
-    var id = row.id.replace('ir-','');
-    var mpn = (document.getElementById('i-mpn-'+id)||{value:''}).value.trim();
-    var cpn = (document.getElementById('i-cpn-'+id)||{value:''}).value.trim();
-    if(!mpn && !cpn) return;
-    records.push({
-      source: source, email: email,
-      mpn: mpn, normalized_pn: norm(mpn||cpn), customer_pn: cpn,
-      manufacturer: (document.getElementById('i-mfr-'+id)||{value:''}).value.trim(),
-      description: (document.getElementById('i-desc-'+id)||{value:''}).value.trim(),
-      date_received: dateReceived, batch_id: batchId,
-    });
-  });
-  if(!records.length){showToast('No items to save — fill in at least one row','error');return;}
+async function saveIntel(){
+  const mpn = document.getElementById('i-mpn').value.trim();
+  const cpn = document.getElementById('i-cpn').value.trim();
+  if(!mpn && !cpn){ showToast('Enter at least an MPN or Customer P/N','error'); return; }
+  const body = {
+    source: document.getElementById('i-source').value.trim(),
+    email: document.getElementById('i-email').value.trim(),
+    mpn, normalized_pn: norm(mpn||cpn),
+    customer_pn: cpn,
+    manufacturer: document.getElementById('i-mfr').value.trim(),
+    description: document.getElementById('i-desc').value.trim(),
+    date_received: document.getElementById('i-date').value || today(),
+    notes: document.getElementById('i-notes').value.trim(),
+    batch_id: 'manual-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.random().toString(36).slice(2,6).toUpperCase(),
+  };
   try {
-    var res = await api('part_intel',{method:'POST',body:records,prefer:'return=minimal'});
+    const res = await api('part_intel',{method:'POST',body,prefer:'return=minimal'});
     if(!res.ok) throw new Error('Save failed');
-    showToast(records.length+' intel record'+(records.length>1?'s':'')+' saved ✓','success');
+    showToast('Part intel saved ✓','success');
     clearIntelForm();
     loadIntel();
-  } catch(e){showToast('Error: '+e.message,'error');}
+  } catch(e){ showToast('Error: '+e.message,'error'); }
 }
 
-async function saveIntel(){ await saveIntelItems(); }
 async function loadIntel(){
   const res = await api('part_intel',{query:'?order=created_at.desc&limit=50'});
   const data = await res.json();
@@ -1268,10 +1232,11 @@ async function loadIntel(){
 }
 
 function clearIntelForm(){
-  ['i-source','i-email','i-date'].forEach(function(id){
-    var el=document.getElementById(id); if(el) el.value='';
+  ['i-source','i-email','i-mpn','i-cpn','i-mfr','i-desc','i-notes'].forEach(id=>{
+    document.getElementById(id).value='';
   });
-  var ir=document.getElementById('i-rows'); if(ir){ir.innerHTML=''; iRowCount=0; for(var i=0;i<5;i++) addIntelRow();}
+  document.getElementById('i-date').value = today();
+  document.getElementById('i-norm-preview').textContent='';
 }
 
 // ── MODAL ─────────────────────────────────────────────────────────────────
