@@ -140,7 +140,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
   <div style="display:flex;align-items:center;gap:10px;">
-    <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v2.0.7</span>
+    <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v2.0.8</span>
     <div class="db-pill" id="db-pill">loading…</div>
   </div>
 </header>
@@ -539,7 +539,7 @@ async function saveRows(type) {
     var n = row.id.replace(type+"-row-","");
     var vals = {};
     cfg.fields.forEach(function(f){var el=document.getElementById(f.id+"-"+n);vals[f.id]=el?el.value.trim():"";});
-    var mpnKey=type+"-mpn", cpnKey=type+"-cpn";
+    var pfx={excess:"ex",demand:"d",intel:"i"}[type]; var mpnKey=pfx+"-mpn", cpnKey=pfx+"-cpn";
     var mpn=vals[mpnKey]||"", cpn=vals[cpnKey]||"";
     if (!mpn && !cpn) return;
     if (type==="excess") {
