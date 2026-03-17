@@ -186,11 +186,11 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.54</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.56</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
-  <div class="nav-tab active" id="tab-search" onclick="switchTab('search')">🔍 Search Excess</div>
+  <div class="nav-tab active" id="tab-search" onclick="switchTab('search')">🔍 Parts Search</div>
   <div class="nav-tab" id="tab-demand" onclick="switchTab('demand')">📋 Log Demand</div>
   <div class="nav-tab" id="tab-intel" onclick="switchTab('intel')">💡 Part Intel</div>
   <div class="nav-tab" id="tab-upload" onclick="switchTab('upload')">📤 Upload List</div>
@@ -933,6 +933,29 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('i-date').value = today();
 });
 
+function startEditDemandField(e, id, field, cur){
+  const span = e.target.closest('.editable');
+  const placeholder = field==='target_price' ? 'e.g. 25.00' : field==='quantity_needed' ? 'e.g. 500' : 'Customer P/N';
+  span.outerHTML = `<span class="edit-form">
+    <input class="edit-input" id="dei-${id}-${field}" value="${cur}" placeholder="${placeholder}"
+      onkeydown="if(event.key==='Enter')saveDemandField(${id},'${field}');if(event.key==='Escape')loadDemand()" />
+    <button class="save-btn" onclick="saveDemandField(${id},'${field}')">✓</button>
+    <button class="cancel-btn" onclick="loadDemand()">✕</button>
+  </span>`;
+  document.getElementById(`dei-${id}-${field}`)?.focus();
+}
+
+async function saveDemandField(id, field){
+  const val = document.getElementById(`dei-${id}-${field}`)?.value?.trim()||'';
+  const body = {[field]: val, updated_at: new Date().toISOString()};
+  try {
+    const res = await api('demand',{method:'PATCH',query:`?id=eq.${id}`,body,prefer:'return=minimal'});
+    if(!res.ok) throw new Error('Save failed');
+    showToast('Saved ✓','success');
+    loadDemand();
+  } catch(e){ showToast('Save failed: '+e.message,'error'); loadDemand(); }
+}
+
 async function saveDemand(){
   const mpn = document.getElementById('d-mpn').value.trim();
   const cpn = document.getElementById('d-cpn').value.trim();
@@ -1011,6 +1034,23 @@ function openDemandModal(id){
     </div></div>
   `;
   document.getElementById('modal-overlay').classList.add('open');
+}
+
+async function saveDemandModalField(id, field, inputId){
+  const val = document.getElementById(inputId)?.value?.trim()||'';
+  const body = {[field]: val, updated_at: new Date().toISOString()};
+  const btn = document.querySelector(`#modal-body [onclick*="${inputId}"]`);
+  if(btn){btn.textContent='…';btn.disabled=true;}
+  try {
+    const res = await api('demand',{method:'PATCH',query:`?id=eq.${id}`,body,prefer:'return=minimal'});
+    if(!res.ok) throw new Error('Failed');
+    if(btn){btn.textContent='✓';btn.style.background='var(--accent2)';}
+    showToast('Saved ✓','success');
+    loadDemand();
+  } catch(e){
+    if(btn){btn.textContent='Save';btn.disabled=false;}
+    showToast('Failed: '+e.message,'error');
+  }
 }
 
 async function saveDemandStatus(id){
