@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.60</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.62</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -1332,13 +1332,49 @@ async function importCSV(){
   btn.disabled = true; btn.textContent = 'Importing…';
 
   // Build records
-  const records = uploadRows.map(r=>{
+  // Expand multi-MPN rows if checkbox checked
+  const expandMpn = document.getElementById('ul-expand-mpn').checked;
+  let processedRows = uploadRows;
+  if(expandMpn) {
+    processedRows = [];
+    for(const r of uploadRows) {
+      const mpnCell = r.mpn || '';
+      const mfrCell = r.manufacturer || '';
+      const mpns = mpnCell.split(/\n|\r\n|\r|;/).map(m=>m.trim()).filter(Boolean);
+      const mfrs = mfrCell.split(/\n|\r\n|\r|;/).map(m=>m.trim()).filter(Boolean);
+      if(mpns.length <= 1) {
+        processedRows.push(r);
+      } else {
+        mpns.forEach((mpn, i) => {
+          processedRows.push({
+            ...r,
+            mpn: mpn,
+            manufacturer: mfrs[i] || mfrs[mfrs.length-1] || r.manufacturer || '',
+            normalized_pn: mpn.replace(/[^a-zA-Z0-9]/g,'').toUpperCase()
+          });
+        });
+      }
+    }
+    showToast('Expanded to '+processedRows.length+' rows from '+uploadRows.length+' original rows','success');
+  }
+
+  const records = processedRows.map(r=>{
     const mpn = r.mpn || r.customer_pn || '';
     const normPn = r.normalized_pn || mpn.replace(/[^a-zA-Z0-9]/g,'').toUpperCase();
     return {
       normalized_pn: normPn,
       customer: override && customer ? customer : (r.customer || customer),
-      list_date: override && date ? date : (r.list_date || date),
+      list_date: (()=>{
+        let d = override && date ? date : (r.list_date || date || '');
+        // Convert 3/17/2026 -> 03/17/2026
+        if(d && d.includes('/')) {
+          const p = d.split('/');
+          if(p.length === 3) {
+            d = p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0')+'/'+p[2];
+          }
+        }
+        return d;
+      })(),
       mpn: r.mpn || '',
       customer_pn: r.customer_pn || '',
       description: r.description || '',
