@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.66</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.67</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -471,6 +471,77 @@ tbody td{padding:9px 12px;vertical-align:middle;}
       <button onclick="openDeleteBatch()" style="background:transparent;border:1px solid var(--accent3);color:var(--accent3);font-family:var(--display);font-size:0.78rem;font-weight:600;padding:6px 16px;border-radius:var(--radius);cursor:pointer;">
         🗑 Delete a Batch
       </button>
+    </div>
+
+    <!-- SINGLE EXCESS ITEM FORM -->
+    <div style="margin-bottom:24px;">
+      <div class="form-card">
+        <h3>Add Single Excess Item</h3>
+        <div class="form-grid">
+          <div class="fg">
+            <label>Customer / Company</label>
+            <div class="autocomplete-wrap">
+              <input type="text" id="ex-customer" placeholder="e.g. Honeywell" autocomplete="off"
+                oninput="acSearch(this,'ex-customer-list','customers')"
+                onkeydown="acKey(event,'ex-customer-list')"
+                onfocus="acSearch(this,'ex-customer-list','customers')"
+                onblur="setTimeout(()=>document.getElementById('ex-customer-list').innerHTML='',200)" />
+              <div class="autocomplete-list" id="ex-customer-list"></div>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Email</label>
+            <div class="autocomplete-wrap">
+              <input type="text" id="ex-email" placeholder="contact@company.com" autocomplete="off"
+                oninput="acSearch(this,'ex-email-list','emails')"
+                onkeydown="acKey(event,'ex-email-list')"
+                onfocus="acSearch(this,'ex-email-list','emails')"
+                onblur="setTimeout(()=>document.getElementById('ex-email-list').innerHTML='',200)" />
+              <div class="autocomplete-list" id="ex-email-list"></div>
+            </div>
+          </div>
+          <div class="fg">
+            <label>MPN</label>
+            <input type="text" id="ex-mpn" placeholder="Manufacturer Part Number" oninput="exNormPreview()" />
+            <div class="norm-preview" id="ex-norm-preview"></div>
+          </div>
+          <div class="fg">
+            <label>Customer P/N</label>
+            <input type="text" id="ex-cpn" placeholder="Their internal part number" />
+          </div>
+          <div class="fg">
+            <label>Manufacturer</label>
+            <div class="autocomplete-wrap">
+              <input type="text" id="ex-mfr" placeholder="e.g. Broadcom" autocomplete="off"
+                oninput="acSearch(this,'ex-mfr-list','manufacturers')"
+                onkeydown="acKey(event,'ex-mfr-list')"
+                onfocus="acSearch(this,'ex-mfr-list','manufacturers')"
+                onblur="setTimeout(()=>document.getElementById('ex-mfr-list').innerHTML='',200)" />
+              <div class="autocomplete-list" id="ex-mfr-list"></div>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Description</label>
+            <input type="text" id="ex-desc" placeholder="Part description" />
+          </div>
+          <div class="fg">
+            <label>Quantity</label>
+            <input type="text" id="ex-qty" placeholder="e.g. 500" />
+          </div>
+          <div class="fg">
+            <label>Price (USD)</label>
+            <input type="text" id="ex-price" placeholder="e.g. 25.00" />
+          </div>
+          <div class="fg">
+            <label>List Date</label>
+            <input type="text" id="ex-date" placeholder="MM/DD/YYYY" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="saveExcessItem()">Save Excess Item</button>
+          <button class="btn-ghost" onclick="clearExcessForm()">Clear</button>
+        </div>
+      </div>
     </div>
 
     <!-- TEMPLATE DOWNLOAD -->
@@ -1307,6 +1378,117 @@ function handleIntelUpload(e){
     },
     error: function(e){ showToast('Error reading file: '+e.message,'error'); }
   });
+}
+
+// ── DELETE BATCH ──────────────────────────────────────────────────────────
+function openDeleteBatch(){
+  document.getElementById('delete-batch-input').value = '';
+  document.getElementById('delete-batch-preview').classList.add('hidden');
+  document.getElementById('delete-batch-confirm-btn').classList.add('hidden');
+  document.getElementById('delete-batch-preview-btn').classList.remove('hidden');
+  document.getElementById('delete-batch-overlay').classList.add('open');
+}
+
+function closeDeleteBatch(e){
+  if(e.target === document.getElementById('delete-batch-overlay'))
+    document.getElementById('delete-batch-overlay').classList.remove('open');
+}
+
+async function previewBatchDelete(){
+  const batchId = document.getElementById('delete-batch-input').value.trim();
+  if(!batchId){ showToast('Enter a Batch ID','error'); return; }
+  try {
+    const [exRes, dmRes, inRes] = await Promise.all([
+      api('excess_parts', {query:'?batch_id=eq.'+encodeURIComponent(batchId)+'&select=id'}),
+      api('demand',       {query:'?batch_id=eq.'+encodeURIComponent(batchId)+'&select=id'}),
+      api('part_intel',   {query:'?batch_id=eq.'+encodeURIComponent(batchId)+'&select=id'}),
+    ]);
+    const [exData, dmData, inData] = await Promise.all([exRes.json(), dmRes.json(), inRes.json()]);
+    const total = exData.length + dmData.length + inData.length;
+    const preview = document.getElementById('delete-batch-preview');
+    if(total === 0){
+      preview.innerHTML = '<span style="color:var(--accent3)">No records found with this Batch ID.</span>';
+      preview.classList.remove('hidden');
+      document.getElementById('delete-batch-confirm-btn').classList.add('hidden');
+      return;
+    }
+    preview.innerHTML = 
+      '<div style="color:var(--text);margin-bottom:6px;font-weight:600;">Found '+total.toLocaleString()+' records to delete:</div>' +
+      (exData.length ? '<div style="color:var(--accent)">• '+exData.length.toLocaleString()+' Excess Parts records</div>' : '') +
+      (dmData.length ? '<div style="color:var(--yellow)">• '+dmData.length.toLocaleString()+' Demand records</div>' : '') +
+      (inData.length ? '<div style="color:var(--purple)">• '+inData.length.toLocaleString()+' Part Intel records</div>' : '') +
+      '<div style="color:var(--accent3);margin-top:8px;">This cannot be undone.</div>';
+    preview.classList.remove('hidden');
+    document.getElementById('delete-batch-confirm-btn').classList.remove('hidden');
+    document.getElementById('delete-batch-preview-btn').classList.add('hidden');
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function confirmBatchDelete(){
+  const batchId = document.getElementById('delete-batch-input').value.trim();
+  if(!batchId) return;
+  const btn = document.getElementById('delete-batch-confirm-btn');
+  btn.textContent = 'Deleting…'; btn.disabled = true;
+  try {
+    await Promise.all([
+      api('excess_parts', {method:'DELETE', query:'?batch_id=eq.'+encodeURIComponent(batchId), prefer:'return=minimal'}),
+      api('demand',       {method:'DELETE', query:'?batch_id=eq.'+encodeURIComponent(batchId), prefer:'return=minimal'}),
+      api('part_intel',   {method:'DELETE', query:'?batch_id=eq.'+encodeURIComponent(batchId), prefer:'return=minimal'}),
+    ]);
+    document.getElementById('delete-batch-overlay').classList.remove('open');
+    showToast('Batch "'+batchId+'" deleted ✓','success');
+    loadCount();
+  } catch(e){
+    showToast('Delete failed: '+e.message,'error');
+    btn.textContent = '🗑 Confirm Delete'; btn.disabled = false;
+  }
+}
+
+// ── SINGLE EXCESS ENTRY ───────────────────────────────────────────────────
+function exNormPreview(){
+  const raw = document.getElementById('ex-mpn').value.trim();
+  const el = document.getElementById('ex-norm-preview');
+  if(!raw){ el.textContent=''; return; }
+  const n = norm(raw);
+  el.textContent = n !== raw.toUpperCase() ? '→ normalized: '+n : '';
+}
+
+async function saveExcessItem(){
+  const mpn = document.getElementById('ex-mpn').value.trim();
+  const cpn = document.getElementById('ex-cpn').value.trim();
+  if(!mpn && !cpn){ showToast('Enter at least an MPN or Customer P/N','error'); return; }
+  const d2 = new Date();
+  const today = (d2.getMonth()+1).toString().padStart(2,'0')+'/'+d2.getDate().toString().padStart(2,'0')+'/'+d2.getFullYear();
+  const body = {
+    normalized_pn: norm(mpn || cpn),
+    customer: document.getElementById('ex-customer').value.trim(),
+    list_date: document.getElementById('ex-date').value.trim() || today,
+    mpn: mpn,
+    customer_pn: cpn,
+    description: document.getElementById('ex-desc').value.trim(),
+    manufacturer: document.getElementById('ex-mfr').value.trim(),
+    quantity: document.getElementById('ex-qty').value.trim(),
+    price: document.getElementById('ex-price').value.trim(),
+    match_type: 'mpn',
+    email: document.getElementById('ex-email').value.trim(),
+    batch_id: 'manual-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.random().toString(36).slice(2,6).toUpperCase(),
+  };
+  try {
+    const res = await api('excess_parts',{method:'POST',body,prefer:'return=minimal'});
+    if(!res.ok) throw new Error('Save failed');
+    showToast('Excess item saved ✓','success');
+    clearExcessForm();
+    loadCount();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+function clearExcessForm(){
+  ['ex-customer','ex-email','ex-mpn','ex-cpn','ex-mfr','ex-desc','ex-qty','ex-price','ex-date'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value='';
+  });
+  const np = document.getElementById('ex-norm-preview');
+  if(np) np.textContent='';
 }
 
 // ── UPLOAD ────────────────────────────────────────────────────────────────
