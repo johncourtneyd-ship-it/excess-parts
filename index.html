@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.47</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.48</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -727,6 +727,12 @@ function renderSearch(){
     const desc = r.description || '—';
     const mfr = r.manufacturer || '—';
     const qty = src==='demand' ? (r.quantity_needed||'—') : (r.quantity||'—');
+    const qtyCell = src==='excess' ? `
+      <span class="editable td-mono td-bold"
+        onclick="event.stopPropagation();startEditQty(event,${r.id},'${(r.quantity||'').replace(/'/g,"\'")}')">
+        ${r.quantity||'—'} <span class="pencil">✎</span>
+      </span>` 
+      : `<span class="td-mono td-bold">${qty}</span>`;
     const price = src==='demand' ? (r.target_price||'') : (r.price||'');
     const date = src==='excess' ? (r.list_date||'—') : (r.date_received||'—');
     const email = r.email || '—';
@@ -759,7 +765,7 @@ function renderSearch(){
       <td class="td-mono td-blue td-clip-sm">${cpn}</td>
       <td class="td-muted td-clip" title="${desc}">${desc}</td>
       <td class="td-muted td-clip-sm">${mfr}</td>
-      <td class="td-mono td-bold">${qty}</td>
+      <td>${qtyCell}</td>
       <td>${priceCell}</td>
       <td>${dateCell}</td>
       <td style="max-width:180px;white-space:normal;word-wrap:break-word;font-size:0.72rem;color:var(--text2);line-height:1.4;">${r.my_notes||'—'}</td>
@@ -818,6 +824,17 @@ function startEditDate(e,id,cur){
     <input class="edit-input" id="ei-${id}" value="${cur}" placeholder="YYYY-MM"
       onkeydown="if(event.key==='Enter')saveField(${id},'list_date');if(event.key==='Escape')renderSearch()" />
     <button class="save-btn" onclick="saveField(${id},'list_date')">✓</button>
+    <button class="cancel-btn" onclick="renderSearch()">✕</button>
+  </span>`;
+  document.getElementById('ei-'+id)?.focus();
+}
+
+function startEditQty(e,id,cur){
+  const span = e.target.closest('.editable');
+  span.outerHTML = `<span class="edit-form">
+    <input class="edit-input" id="ei-${id}" value="${cur}" placeholder="e.g. 500" style="width:80px;"
+      onkeydown="if(event.key==='Enter')saveField(${id},'quantity');if(event.key==='Escape')renderSearch()" />
+    <button class="save-btn" onclick="saveField(${id},'quantity')">✓</button>
     <button class="cancel-btn" onclick="renderSearch()">✕</button>
   </span>`;
   document.getElementById('ei-'+id)?.focus();
