@@ -165,7 +165,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.39</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.41</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -215,7 +215,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
         <table>
           <thead><tr>
             <th>Source</th><th>Customer</th><th>MPN</th><th>Customer P/N</th><th>Description</th>
-            <th>Manufacturer</th><th>Qty</th><th>Price / Target</th><th>Date</th><th>Email / Contact</th>
+            <th>Manufacturer</th><th>Qty</th><th>Price / Target</th><th>Date</th><th>Notes</th><th>Email / Contact</th>
           </tr></thead>
           <tbody id="search-tbody"></tbody>
         </table>
@@ -683,6 +683,12 @@ function renderSearch(){
       </span>`
       : `<span class="td-mono td-purple">${date}</span>`;
 
+    const emailCell = (src==='excess' && r.email) ? 
+      `<a href="mailto:${r.email}?subject=${encodeURIComponent((r.customer_pn||'') + ' - ' + (r.mpn||''))}" 
+        onclick="event.stopPropagation()"
+        style="display:inline-flex;align-items:center;gap:4px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.25);color:var(--accent);font-size:0.65rem;font-family:var(--mono);padding:3px 8px;border-radius:4px;text-decoration:none;white-space:nowrap;">✉ Email</a>` 
+      : `<span style="color:var(--text3);font-size:0.68rem;">${email}</span>`;
+
     return `<tr onclick="openSearchModal(${r.id}, '${src}')">
       <td>${srcBadge}</td>
       <td class="td-bold td-clip" title="${customer}">${customer}</td>
@@ -693,7 +699,8 @@ function renderSearch(){
       <td class="td-mono td-bold">${qty}</td>
       <td>${priceCell}</td>
       <td>${dateCell}</td>
-      <td class="td-muted" style="font-size:0.68rem;">${email}</td>
+      <td style="max-width:180px;white-space:normal;word-wrap:break-word;font-size:0.72rem;color:var(--text2);line-height:1.4;">${r.my_notes||'—'}</td>
+      <td onclick="event.stopPropagation()">${emailCell}</td>
     </tr>`;
   }).join('');
 
