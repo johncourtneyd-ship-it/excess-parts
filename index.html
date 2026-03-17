@@ -140,7 +140,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
   <div style="display:flex;align-items:center;gap:10px;">
-    <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v2.0.8</span>
+    <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v2.0.9</span>
     <div class="db-pill" id="db-pill">loading…</div>
   </div>
 </header>
@@ -432,19 +432,17 @@ function switchTab(t) {
 
 async function loadAcData() {
   try {
-    var r1 = await fetch(SUPA_URL+"/rest/v1/distinct_customers?order=customer.asc", {headers:{"apikey":SUPA_KEY,"Authorization":"Bearer "+SUPA_KEY}});
-    var custData = await r1.json();
-    acCache.customers = custData.map(function(r){return r.customer;}).filter(Boolean).sort();
     var allRes = await Promise.all([
-      api("demand",    {query:"?select=email,manufacturer&limit=500"}),
-      api("part_intel",{query:"?select=email,manufacturer&limit=500"})
+      fetch(SUPA_URL+"/rest/v1/distinct_customers?order=customer.asc", {headers:{"apikey":SUPA_KEY,"Authorization":"Bearer "+SUPA_KEY}}),
+      fetch(SUPA_URL+"/rest/v1/distinct_emails?order=email.asc", {headers:{"apikey":SUPA_KEY,"Authorization":"Bearer "+SUPA_KEY}}),
+      fetch(SUPA_URL+"/rest/v1/distinct_manufacturers?order=manufacturer.asc", {headers:{"apikey":SUPA_KEY,"Authorization":"Bearer "+SUPA_KEY}})
     ]);
-    var dmData = await allRes[0].json();
-    var inData = await allRes[1].json();
-    var allEmails = dmData.map(function(r){return r.email;}).concat(inData.map(function(r){return r.email;}));
-    var allMfrs  = dmData.map(function(r){return r.manufacturer;}).concat(inData.map(function(r){return r.manufacturer;}));
-    acCache.emails = Array.from(new Set(allEmails.filter(Boolean))).sort();
-    acCache.manufacturers = Array.from(new Set(allMfrs.filter(Boolean))).sort();
+    var custData = await allRes[0].json();
+    var emailData = await allRes[1].json();
+    var mfrData = await allRes[2].json();
+    acCache.customers = custData.map(function(r){return r.customer;}).filter(Boolean).sort();
+    acCache.emails = emailData.map(function(r){return r.email;}).filter(Boolean).sort();
+    acCache.manufacturers = mfrData.map(function(r){return r.manufacturer;}).filter(Boolean).sort();
   } catch(e) {}
 }
 
