@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.43</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.46</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -1299,13 +1299,23 @@ let _manufacturers = null;
 async function loadCustomers(){
   if(_customers) return _customers;
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/excess_parts?select=customer,email,manufacturer&order=customer.asc&limit=2000`, {
-      headers: {'apikey': KEY, 'Authorization': `Bearer ${KEY}`}
-    });
-    const data = await res.json();
-    _customers = [...new Set(data.map(r=>r.customer).filter(Boolean))].sort();
-    _emails = [...new Set(data.map(r=>r.email).filter(Boolean))].sort();
-    _manufacturers = [...new Set(data.map(r=>r.manufacturer).filter(Boolean))].sort();
+    const [custRes, emailRes, mfrRes] = await Promise.all([
+      fetch(`${SUPA_URL}/rest/v1/distinct_customers?order=customer.asc`, {
+        headers: {'apikey': KEY, 'Authorization': `Bearer ${KEY}`}
+      }),
+      fetch(`${SUPA_URL}/rest/v1/distinct_emails?order=email.asc`, {
+        headers: {'apikey': KEY, 'Authorization': `Bearer ${KEY}`}
+      }),
+      fetch(`${SUPA_URL}/rest/v1/distinct_manufacturers?order=manufacturer.asc`, {
+        headers: {'apikey': KEY, 'Authorization': `Bearer ${KEY}`}
+      })
+    ]);
+    const [custData, emailData, mfrData] = await Promise.all([
+      custRes.json(), emailRes.json(), mfrRes.json()
+    ]);
+    _customers = custData.map(r=>r.customer).filter(Boolean).sort();
+    _emails = emailData.map(r=>r.email).filter(Boolean).sort();
+    _manufacturers = mfrData.map(r=>r.manufacturer).filter(Boolean).sort();
     return _customers;
   } catch(e){ return []; }
 }
