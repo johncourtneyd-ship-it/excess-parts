@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.57</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.58</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -990,21 +990,21 @@ async function loadDemand(){
     el.innerHTML='<div class="state-box"><h3>No requests yet</h3><p>Log your first demand request using the form.</p></div>';
     return;
   }
-      el.innerHTML = `<div class="table-wrap"><table>
-    <thead><tr><th>Customer</th><th>MPN</th><th>Cust P/N</th><th>Qty Needed</th><th>Target $</th><th>Date</th><th>Status</th></tr></thead>
-    <tbody>${data.map(r=>`<tr ondblclick="openDemandModal(${r.id})" style="cursor:default;">
-      <td class="td-bold td-clip">${r.customer||'—'}</td>
-      <td class="td-mono td-accent td-clip-sm">${r.mpn||'—'}</td>
-      <td><span class="editable td-mono td-blue" onclick="event.stopPropagation();startEditDemandField(event,${r.id},'customer_pn','${(r.customer_pn||'').replace(/'/g,\"\\'\")}')">
-        ${r.customer_pn||'—'} <span class="pencil">✎</span></span></td>
-      <td><span class="editable td-mono" onclick="event.stopPropagation();startEditDemandField(event,${r.id},'quantity_needed','${(r.quantity_needed||'').replace(/'/g,\"\\'\")}')">
-        ${r.quantity_needed||'—'} <span class="pencil">✎</span></span></td>
-      <td><span class="editable td-mono td-green" onclick="event.stopPropagation();startEditDemandField(event,${r.id},'target_price','${(r.target_price||'').replace(/'/g,\"\\'\")}')">
-        ${r.target_price?'$'+parseFloat(r.target_price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'—'} <span class="pencil">✎</span></span></td>
-      <td class="td-mono td-purple">${r.date_received||'—'}</td>
-      <td>${statusBadge(r.status)}</td>
-    </tr>`).join('')}</tbody>
-  </table></div>`;
+          const rows = data.map(r => {
+    const priceStr = r.target_price ? '$'+parseFloat(r.target_price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+    return '<tr ondblclick="openDemandModal('+r.id+')" style="cursor:default;">'
+      + '<td class="td-bold td-clip">'+(r.customer||'—')+'</td>'
+      + '<td class="td-mono td-accent td-clip-sm">'+(r.mpn||'—')+'</td>'
+      + '<td><span class="editable td-mono td-blue" onclick="event.stopPropagation();startEditDemandField(event,'+r.id+',\'customer_pn\',\''+((r.customer_pn||'').replace(/'/g,''))+'\')">'+(r.customer_pn||'—')+' <span class="pencil">✎</span></span></td>'
+      + '<td><span class="editable td-mono" onclick="event.stopPropagation();startEditDemandField(event,'+r.id+',\'quantity_needed\',\''+((r.quantity_needed||'').replace(/'/g,''))+'\')">'+(r.quantity_needed||'—')+' <span class="pencil">✎</span></span></td>'
+      + '<td><span class="editable td-mono td-green" onclick="event.stopPropagation();startEditDemandField(event,'+r.id+',\'target_price\',\''+((r.target_price||'').replace(/'/g,''))+'\'">'+priceStr+' <span class="pencil">✎</span></span></td>'
+      + '<td class="td-mono td-purple">'+(r.date_received||'—')+'</td>'
+      + '<td>'+statusBadge(r.status)+'</td>'
+      + '</tr>';
+  }).join('');
+  el.innerHTML = '<div class="table-wrap"><table>'
+    + '<thead><tr><th>Customer</th><th>MPN</th><th>Cust P/N</th><th>Qty Needed</th><th>Target $</th><th>Date</th><th>Status</th></tr></thead>'
+    + '<tbody>' + rows + '</tbody></table></div>';
   window._demandData = data;
 }
 
