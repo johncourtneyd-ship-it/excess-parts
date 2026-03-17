@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.72</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.73</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -1004,8 +1004,10 @@ async function saveModalField(id,field,inputId,table){
 
 // ── DEMAND ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('d-date').value = today();
-  document.getElementById('i-date').value = today();
+  var d = new Date();
+  var td = (d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getDate().toString().padStart(2,'0')+'/'+d.getFullYear();
+  var dd = document.getElementById('d-date'); if(dd) dd.value = td;
+  var id = document.getElementById('i-date'); if(id) id.value = td;
 });
 
 function startEditDemandField(e, id, field, cur){
