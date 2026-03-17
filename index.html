@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.70</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.71</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -1437,7 +1437,7 @@ function exNormPreview(){
   el.textContent = n !== raw.toUpperCase() ? '→ normalized: '+n : '';
 }
 
-async let exRowCount = 0;
+var exRowCount = 0;
 
 function addExcessRow(){
   exRowCount++;
