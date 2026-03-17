@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.73</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.74</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -322,37 +322,6 @@ tbody td{padding:9px 12px;vertical-align:middle;}
         </div>
         <div id="demand-list">
           <div class="state-box"><h3>No requests yet</h3><p>Log your first demand request using the form.</p></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ DELETE BATCH MODAL ═══ -->
-  <div class="overlay" id="delete-batch-overlay" onclick="closeDeleteBatch(event)">
-    <div class="modal" style="max-width:480px;">
-      <div class="modal-hdr">
-        <h3 style="color:var(--accent3);">⚠ Delete Batch</h3>
-        <button class="modal-x" onclick="document.getElementById('delete-batch-overlay').classList.remove('open')">✕</button>
-      </div>
-      <div class="modal-bdy">
-        <p style="font-size:0.82rem;color:var(--text2);margin-bottom:16px;line-height:1.6;">
-          This will permanently delete all records with the specified Batch ID from <strong>all tables</strong> (Excess, Demand, Part Intel).
-        </p>
-        <div class="fg" style="margin-bottom:16px;">
-          <label>Batch ID to Delete</label>
-          <input type="text" id="delete-batch-input" placeholder="e.g. Curtiss-Wright-20260317-A3F2"
-            style="background:var(--bg);border:1px solid var(--accent3);color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:8px 12px;border-radius:4px;outline:none;width:100%;" />
-        </div>
-        <div id="delete-batch-preview" class="hidden" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-family:var(--mono);font-size:0.75rem;">
-        </div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn-ghost" style="flex:1;" onclick="document.getElementById('delete-batch-overlay').classList.remove('open')">Cancel</button>
-          <button id="delete-batch-preview-btn" style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-family:var(--display);font-size:0.82rem;font-weight:600;padding:10px;border-radius:var(--radius);cursor:pointer;" onclick="previewBatchDelete()">
-            🔍 Preview
-          </button>
-          <button id="delete-batch-confirm-btn" class="hidden" style="flex:1;background:var(--accent3);border:none;color:white;font-family:var(--display);font-size:0.82rem;font-weight:700;padding:10px;border-radius:var(--radius);cursor:pointer;" onclick="confirmBatchDelete()">
-            🗑 Confirm Delete
-          </button>
         </div>
       </div>
     </div>
@@ -621,6 +590,38 @@ tbody td{padding:9px 12px;vertical-align:middle;}
   </div>
 
 </div>
+
+
+  <!-- ═══ DELETE BATCH MODAL ═══ -->
+  <div class="overlay" id="delete-batch-overlay" onclick="closeDeleteBatch(event)">
+    <div class="modal" style="max-width:480px;">
+      <div class="modal-hdr">
+        <h3 style="color:var(--accent3);">⚠ Delete Batch</h3>
+        <button class="modal-x" onclick="document.getElementById('delete-batch-overlay').classList.remove('open')">✕</button>
+      </div>
+      <div class="modal-bdy">
+        <p style="font-size:0.82rem;color:var(--text2);margin-bottom:16px;line-height:1.6;">
+          This will permanently delete all records with the specified Batch ID from <strong>all tables</strong> (Excess, Demand, Part Intel).
+        </p>
+        <div class="fg" style="margin-bottom:16px;">
+          <label>Batch ID to Delete</label>
+          <input type="text" id="delete-batch-input" placeholder="e.g. Curtiss-Wright-20260317-A3F2"
+            style="background:var(--bg);border:1px solid var(--accent3);color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:8px 12px;border-radius:4px;outline:none;width:100%;" />
+        </div>
+        <div id="delete-batch-preview" class="hidden" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-family:var(--mono);font-size:0.75rem;">
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-ghost" style="flex:1;" onclick="document.getElementById('delete-batch-overlay').classList.remove('open')">Cancel</button>
+          <button id="delete-batch-preview-btn" style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-family:var(--display);font-size:0.82rem;font-weight:600;padding:10px;border-radius:var(--radius);cursor:pointer;" onclick="previewBatchDelete()">
+            🔍 Preview
+          </button>
+          <button id="delete-batch-confirm-btn" class="hidden" style="flex:1;background:var(--accent3);border:none;color:white;font-family:var(--display);font-size:0.82rem;font-weight:700;padding:10px;border-radius:var(--radius);cursor:pointer;" onclick="confirmBatchDelete()">
+            🗑 Confirm Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <!-- MODAL -->
 <div class="overlay" id="modal-overlay" onclick="closeModal(event)">
