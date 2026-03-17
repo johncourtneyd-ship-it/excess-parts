@@ -154,6 +154,27 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 .toast.error{border-left:3px solid var(--accent3);}
 .hidden{display:none!important;}
 
+/* AUTOCOMPLETE */
+.autocomplete-wrap { position: relative; }
+.autocomplete-list {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 999;
+  background: var(--surface2); border: 1px solid var(--accent);
+  border-top: none; border-radius: 0 0 4px 4px;
+  max-height: 200px; overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.autocomplete-item {
+  padding: 8px 12px; font-size: 0.8rem; color: var(--text2);
+  cursor: pointer; transition: background 0.1s;
+  border-bottom: 1px solid var(--border);
+}
+.autocomplete-item:last-child { border-bottom: none; }
+.autocomplete-item:hover, .autocomplete-item.active {
+  background: var(--surface3); color: var(--text);
+}
+.autocomplete-item strong { color: var(--accent); }
+
+
 /* UPLOAD ZONE */
 .upload-zone{background:var(--bg);border:2px dashed var(--border);border-radius:var(--radius);padding:40px 32px;text-align:center;cursor:pointer;transition:all 0.15s;margin-top:4px;}
 .upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:rgba(0,212,255,0.03);}
@@ -165,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.41</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.43</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -233,11 +254,25 @@ tbody td{padding:9px 12px;vertical-align:middle;}
         <div class="form-grid">
           <div class="fg">
             <label>Customer / Company</label>
-            <input type="text" id="d-customer" placeholder="e.g. Acme Corp" />
+            <div class="autocomplete-wrap">
+            <input type="text" id="d-customer" placeholder="e.g. Acme Corp" autocomplete="off"
+              oninput="acSearch(this,'d-customer-list','customers')" 
+              onkeydown="acKey(event,'d-customer-list')"
+              onfocus="acSearch(this,'d-customer-list','customers')"
+              onblur="setTimeout(()=>document.getElementById('d-customer-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="d-customer-list"></div>
+          </div>
           </div>
           <div class="fg">
             <label>Email</label>
-            <input type="email" id="d-email" placeholder="contact@company.com" />
+            <div class="autocomplete-wrap">
+            <input type="text" id="d-email" placeholder="contact@company.com" autocomplete="off"
+              oninput="acSearch(this,'d-email-list','emails')"
+              onkeydown="acKey(event,'d-email-list')"
+              onfocus="acSearch(this,'d-email-list','emails')"
+              onblur="setTimeout(()=>document.getElementById('d-email-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="d-email-list"></div>
+          </div>
           </div>
           <div class="fg">
             <label>MPN</label>
@@ -250,7 +285,14 @@ tbody td{padding:9px 12px;vertical-align:middle;}
           </div>
           <div class="fg">
             <label>Manufacturer</label>
-            <input type="text" id="d-mfr" placeholder="e.g. Broadcom" />
+            <div class="autocomplete-wrap">
+            <input type="text" id="d-mfr" placeholder="e.g. Broadcom" autocomplete="off"
+              oninput="acSearch(this,'d-mfr-list','manufacturers')"
+              onkeydown="acKey(event,'d-mfr-list')"
+              onfocus="acSearch(this,'d-mfr-list','manufacturers')"
+              onblur="setTimeout(()=>document.getElementById('d-mfr-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="d-mfr-list"></div>
+          </div>
           </div>
           <div class="fg">
             <label>Description</label>
@@ -314,11 +356,25 @@ tbody td{padding:9px 12px;vertical-align:middle;}
         <div class="form-grid">
           <div class="fg">
             <label>Source / Company</label>
-            <input type="text" id="i-source" placeholder="Who gave you this info" />
+            <div class="autocomplete-wrap">
+            <input type="text" id="i-source" placeholder="Who gave you this info" autocomplete="off"
+              oninput="acSearch(this,'i-source-list','customers')"
+              onkeydown="acKey(event,'i-source-list')"
+              onfocus="acSearch(this,'i-source-list','customers')"
+              onblur="setTimeout(()=>document.getElementById('i-source-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="i-source-list"></div>
+          </div>
           </div>
           <div class="fg">
             <label>Email</label>
-            <input type="email" id="i-email" placeholder="contact@company.com" />
+            <div class="autocomplete-wrap">
+            <input type="text" id="i-email" placeholder="contact@company.com" autocomplete="off"
+              oninput="acSearch(this,'i-email-list','emails')"
+              onkeydown="acKey(event,'i-email-list')"
+              onfocus="acSearch(this,'i-email-list','emails')"
+              onblur="setTimeout(()=>document.getElementById('i-email-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="i-email-list"></div>
+          </div>
           </div>
           <div class="fg">
             <label>MPN</label>
@@ -331,7 +387,14 @@ tbody td{padding:9px 12px;vertical-align:middle;}
           </div>
           <div class="fg">
             <label>Manufacturer</label>
-            <input type="text" id="i-mfr" placeholder="e.g. Texas Instruments" />
+            <div class="autocomplete-wrap">
+            <input type="text" id="i-mfr" placeholder="e.g. Texas Instruments" autocomplete="off"
+              oninput="acSearch(this,'i-mfr-list','manufacturers')"
+              onkeydown="acKey(event,'i-mfr-list')"
+              onfocus="acSearch(this,'i-mfr-list','manufacturers')"
+              onblur="setTimeout(()=>document.getElementById('i-mfr-list').innerHTML='',200)" />
+            <div class="autocomplete-list" id="i-mfr-list"></div>
+          </div>
           </div>
           <div class="fg">
             <label>Description</label>
@@ -1224,6 +1287,77 @@ function cancelUpload(){
   document.getElementById('ul-progress').textContent='';
   document.getElementById('ul-import-btn').textContent='✓ Import into Database';
 }
+
+
+// ── AUTOCOMPLETE ──────────────────────────────────────────────────────────
+let _customers = null;
+let _acIndex = -1;
+
+let _emails = null;
+let _manufacturers = null;
+
+async function loadCustomers(){
+  if(_customers) return _customers;
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/excess_parts?select=customer,email,manufacturer&order=customer.asc&limit=2000`, {
+      headers: {'apikey': KEY, 'Authorization': `Bearer ${KEY}`}
+    });
+    const data = await res.json();
+    _customers = [...new Set(data.map(r=>r.customer).filter(Boolean))].sort();
+    _emails = [...new Set(data.map(r=>r.email).filter(Boolean))].sort();
+    _manufacturers = [...new Set(data.map(r=>r.manufacturer).filter(Boolean))].sort();
+    return _customers;
+  } catch(e){ return []; }
+}
+
+async function acSearch(input, listId, type){
+  const val = input.value.trim().toLowerCase();
+  const list = document.getElementById(listId);
+  _acIndex = -1;
+  
+  await loadCustomers();
+  const options = type === 'emails' ? (_emails||[]) : type === 'manufacturers' ? (_manufacturers||[]) : (_customers||[]);
+  const matches = val 
+    ? options.filter(o => o.toLowerCase().includes(val)).slice(0, 10)
+    : options.slice(0, 10);
+  
+  if(!matches.length){ list.innerHTML=''; return; }
+  
+  list.innerHTML = matches.map((m,i) => {
+    const highlighted = val ? m.replace(new RegExp(val,'gi'), s=>`<strong>${s}</strong>`) : m;
+    return `<div class="autocomplete-item" 
+      onmousedown="acSelect('${m.replace(/'/g,"\'")}','${input.id}','${listId}')"
+      data-idx="${i}">${highlighted}</div>`;
+  }).join('');
+}
+
+function acSelect(value, inputId, listId){
+  document.getElementById(inputId).value = value;
+  document.getElementById(listId).innerHTML = '';
+}
+
+function acKey(e, listId){
+  const list = document.getElementById(listId);
+  const items = list.querySelectorAll('.autocomplete-item');
+  if(!items.length) return;
+  if(e.key === 'ArrowDown'){ 
+    e.preventDefault();
+    _acIndex = Math.min(_acIndex+1, items.length-1);
+    items.forEach((el,i)=>el.classList.toggle('active',i===_acIndex));
+  } else if(e.key === 'ArrowUp'){
+    e.preventDefault();
+    _acIndex = Math.max(_acIndex-1, 0);
+    items.forEach((el,i)=>el.classList.toggle('active',i===_acIndex));
+  } else if(e.key === 'Enter' && _acIndex >= 0){
+    e.preventDefault();
+    items[_acIndex].dispatchEvent(new MouseEvent('mousedown'));
+  } else if(e.key === 'Escape'){
+    list.innerHTML='';
+  }
+}
+
+// Preload customers on page load
+document.addEventListener('DOMContentLoaded', loadCustomers);
 
 // ── TOAST ─────────────────────────────────────────────────────────────────
 let tt;
