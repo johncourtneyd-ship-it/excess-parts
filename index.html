@@ -165,7 +165,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.38</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.39</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -215,7 +215,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
         <table>
           <thead><tr>
             <th>Source</th><th>Customer</th><th>MPN</th><th>Customer P/N</th><th>Description</th>
-            <th>Manufacturer</th><th>Qty</th><th>Price / Target</th><th>Date</th><th>Email</th><th></th>
+            <th>Manufacturer</th><th>Qty</th><th>Price / Target</th><th>Date</th><th>Email / Contact</th>
           </tr></thead>
           <tbody id="search-tbody"></tbody>
         </table>
@@ -672,9 +672,9 @@ function renderSearch(){
     const priceCell = src==='excess' ? `
       <span class="editable td-mono ${price?'td-green':''}"
         onclick="event.stopPropagation();startEditPrice(event,${r.id},'${(price||'').replace(/'/g,"\'")}')">
-        ${price?'$'+price:'—'} <span class="pencil">✎</span>
+        ${price?'$'+parseFloat(price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'—'} <span class="pencil">✎</span>
       </span>${dot}` 
-      : `<span class="td-mono ${price?'td-green':''}">${price?'$'+price:'—'}</span>`;
+      : `<span class="td-mono ${price?'td-green':''}">${price?'$'+parseFloat(price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'—'}</span>`;
 
     const dateCell = src==='excess' ? `
       <span class="editable td-mono td-purple"
@@ -865,7 +865,7 @@ async function loadDemand(){
       <td class="td-mono td-accent td-clip-sm">${r.mpn||'—'}</td>
       <td class="td-mono td-blue td-clip-sm">${r.customer_pn||'—'}</td>
       <td class="td-mono">${r.quantity_needed||'—'}</td>
-      <td class="td-mono td-green">${r.target_price?'$'+r.target_price:'—'}</td>
+      <td class="td-mono td-green">${r.target_price?'$'+parseFloat(r.target_price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'—'}</td>
       <td class="td-mono td-purple">${r.date_received||'—'}</td>
       <td>${statusBadge(r.status)}</td>
     </tr>`).join('')}</tbody>
@@ -885,7 +885,7 @@ function openDemandModal(id){
     <div class="frow"><div class="flbl">Manufacturer</div><div class="fval">${r.manufacturer||'—'}</div></div>
     <div class="frow"><div class="flbl">Description</div><div class="fval">${r.description||'—'}</div></div>
     <div class="frow"><div class="flbl">Qty Needed</div><div class="fval">${r.quantity_needed||'—'}</div></div>
-    <div class="frow"><div class="flbl">Target Price</div><div class="fval" style="color:var(--accent2)">${r.target_price?'$'+r.target_price:'—'}</div></div>
+    <div class="frow"><div class="flbl">Target Price</div><div class="fval" style="color:var(--accent2)">${r.target_price?'$'+parseFloat(r.target_price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'—'}</div></div>
     <div class="frow"><div class="flbl">Date</div><div class="fval">${r.date_received||'—'}</div></div>
     <div class="frow"><div class="flbl">Status</div><div class="fval">
       <select id="dm-status-${id}" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:4px;font-size:0.78rem;">
