@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.58</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.59</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -532,6 +532,17 @@ tbody td{padding:9px 12px;vertical-align:middle;}
         <div style="font-size:0.75rem;color:var(--text3);">Accepts .csv files only</div>
       </div>
       <input type="file" id="ul-file" accept=".csv" style="display:none" onchange="handleFileSelect(event)" />
+
+      <div style="margin-top:12px;padding:14px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-size:0.82rem;font-weight:600;color:var(--purple);">📊 Multiple MPNs in one cell?</div>
+          <div style="font-size:0.75rem;color:var(--text3);margin-top:3px;">For files where one row has multiple MPNs separated by line breaks — enable this to automatically split each MPN into its own row before importing.</div>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;">
+          <input type="checkbox" id="ul-expand-mpn" style="width:16px;height:16px;accent-color:var(--purple);" />
+          <span style="font-family:var(--mono);font-size:0.75rem;color:var(--purple);">Expand MPNs</span>
+        </label>
+      </div>
 
       <div id="ul-preview" class="hidden" style="margin-top:16px;">
         <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text2);margin-bottom:8px;" id="ul-preview-info"></div>
