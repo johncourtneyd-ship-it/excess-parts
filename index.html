@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.65</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.66</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -466,6 +466,12 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
   <!-- ═══ UPLOAD TAB ═══ -->
   <div id="pane-upload" class="hidden">
+
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+      <button onclick="openDeleteBatch()" style="background:transparent;border:1px solid var(--accent3);color:var(--accent3);font-family:var(--display);font-size:0.78rem;font-weight:600;padding:6px 16px;border-radius:var(--radius);cursor:pointer;">
+        🗑 Delete a Batch
+      </button>
+    </div>
 
     <!-- TEMPLATE DOWNLOAD -->
     <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:24px;">
