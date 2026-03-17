@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.49</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.51</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -842,15 +842,24 @@ function startEditQty(e,id,cur){
 
 async function saveField(id,field){
   const val = document.getElementById('ei-'+id)?.value?.trim()||'';
-  const body = {[field]:val, updated_at: new Date().toISOString()};
-  if(field==='price') body.price_updated = new Date().toISOString();
+  const now = new Date().toISOString();
+  const d = new Date(); const today = (d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getDate().toString().padStart(2,'0')+'/'+d.getFullYear();
+  const body = {[field]:val, updated_at: now};
+  if(field==='price') body.price_updated = now;
+  // Auto-stamp list_date when price or qty changes
+  if(field==='price' || field==='quantity') body.list_date = today;
   try {
     const res = await api('excess_parts',{method:'PATCH',query:`?id=eq.${id}`,body,prefer:'return=minimal'});
     if(!res.ok) throw new Error('Save failed');
     const r = searchResults.find(x=>x.id===id);
-    if(r){r[field]=val;if(field==='price')r.price_updated=body.price_updated;}
+    if(r){
+      r[field]=val;
+      if(field==='price') r.price_updated=now;
+      if(field==='price'||field==='quantity') r.list_date=today;
+    }
     renderSearch();
-    showToast(field==='price'?'Price saved ✓':'Date updated ✓','success');
+    const msg = field==='price'?'Price saved ✓':field==='quantity'?'Qty saved ✓':'Date updated ✓';
+    showToast(msg,'success');
   } catch(e){ showToast('Save failed: '+e.message,'error'); renderSearch(); }
 }
 
@@ -888,8 +897,11 @@ function openSearchModal(id, src){
 
 async function saveModalField(id,field,inputId,table){
   const val = document.getElementById(inputId)?.value?.trim()||'';
-  const body = {[field]:val,updated_at:new Date().toISOString()};
-  if(field==='price') body.price_updated = new Date().toISOString();
+  const now = new Date().toISOString();
+  const d2 = new Date(); const today = (d2.getMonth()+1).toString().padStart(2,'0')+'/'+d2.getDate().toString().padStart(2,'0')+'/'+d2.getFullYear();
+  const body = {[field]:val,updated_at:now};
+  if(field==='price') body.price_updated = now;
+  if((field==='price'||field==='quantity') && table==='excess_parts') body.list_date = today;
   const btn = document.querySelector(`#modal-body [onclick*="${inputId}"]`);
   if(btn){btn.textContent='…';btn.disabled=true;}
   try {
@@ -897,7 +909,11 @@ async function saveModalField(id,field,inputId,table){
     if(!res.ok) throw new Error('Failed');
     if(table==='excess_parts'){
       const r = searchResults.find(x=>x.id===id);
-      if(r){r[field]=val;if(field==='price')r.price_updated=body.price_updated;}
+      if(r){
+        r[field]=val;
+        if(field==='price') r.price_updated=body.price_updated;
+        if(field==='price'||field==='quantity') r.list_date=today;
+      }
     }
     if(btn){btn.textContent='✓';btn.style.background='var(--accent2)';}
     showToast('Saved ✓','success');
