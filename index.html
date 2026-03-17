@@ -186,7 +186,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
-  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.59</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v1.0.60</span><div class="db-pill" id="db-pill">Connected · loading…</div></div>
 </header>
 
 <nav class="nav">
@@ -649,7 +649,12 @@ function switchTab(t){
   });
   if(t==='demand') loadDemand();
   if(t==='intel') loadIntel();
-  if(t==='upload') { document.getElementById('ul-date').value = new Date().toISOString().slice(0,7); }
+  if(t==='upload') { 
+    document.getElementById('ul-date').value = new Date().toISOString().slice(0,7);
+    const d = new Date();
+    const td = (d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getDate().toString().padStart(2,'0')+'/'+d.getFullYear();
+    document.getElementById('ex-date').value = td;
+  }
 }
 
 // ── SEARCH ────────────────────────────────────────────────────────────────
