@@ -140,7 +140,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
   <div style="display:flex;align-items:center;gap:10px;">
-    <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v2.0.6</span>
+    <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v2.0.7</span>
     <div class="db-pill" id="db-pill">loading…</div>
   </div>
 </header>
@@ -533,7 +533,7 @@ async function saveRows(type) {
   var shared = {};
   Object.keys(hf).forEach(function(k){var el=document.getElementById(hf[k]);shared[k]=el?el.value.trim():"";});
   var bid = batchId("manual");
-  var rows = document.getElementById(cfg.container).children;
+  var rows = Array.from(document.getElementById(cfg.container).children);
   var records = [];
   rows.forEach(function(row) {
     var n = row.id.replace(type+"-row-","");
