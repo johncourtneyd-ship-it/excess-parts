@@ -140,7 +140,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
   <div style="display:flex;align-items:center;gap:10px;">
-    <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v2.0.10</span>
+    <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v2.0.11</span>
     <div class="db-pill" id="db-pill">loading…</div>
   </div>
 </header>
@@ -492,11 +492,30 @@ function addRow(type) {
   row.className = cfg.gridClass;
   row.id = type+"-row-"+n;
   cfg.fields.forEach(function(f) {
-    var inp = document.createElement("input");
-    inp.type="text"; inp.id=f.id+"-"+n; inp.placeholder=f.ph; inp.className="row-input";
-    inp.addEventListener("focus",function(){inp.style.borderColor="var(--cyan)";});
-    inp.addEventListener("blur", function(){inp.style.borderColor="var(--bdr)";});
-    row.appendChild(inp);
+    var isMfr = f.id.indexOf("-mfr") > -1;
+    if (isMfr) {
+      // Manufacturer field with autocomplete
+      var wrap = document.createElement("div");
+      wrap.style.position = "relative";
+      var inp = document.createElement("input");
+      inp.type="text"; inp.id=f.id+"-"+n; inp.placeholder=f.ph; inp.className="row-input";
+      inp.setAttribute("autocomplete","off");
+      var listId = f.id+"-ac-"+n;
+      var acDiv = document.createElement("div");
+      acDiv.className="ac-list"; acDiv.id=listId;
+      inp.addEventListener("focus",function(){inp.style.borderColor="var(--cyan)"; acInput(inp,listId,"manufacturers");});
+      inp.addEventListener("blur", function(){inp.style.borderColor="var(--bdr)"; acBlur(listId);});
+      inp.addEventListener("input", function(){acInput(inp,listId,"manufacturers");});
+      inp.addEventListener("keydown",function(e){acKey(e,listId);});
+      wrap.appendChild(inp); wrap.appendChild(acDiv);
+      row.appendChild(wrap);
+    } else {
+      var inp = document.createElement("input");
+      inp.type="text"; inp.id=f.id+"-"+n; inp.placeholder=f.ph; inp.className="row-input";
+      inp.addEventListener("focus",function(){inp.style.borderColor="var(--cyan)";});
+      inp.addEventListener("blur", function(){inp.style.borderColor="var(--bdr)";});
+      row.appendChild(inp);
+    }
   });
   var btn = document.createElement("button");
   btn.className="row-del"; btn.innerHTML="&#10005;";
