@@ -140,7 +140,7 @@ tbody td{padding:9px 12px;vertical-align:middle;}
 <header class="header">
   <div class="logo">electronic parts<span>/db</span><sub>Parts Intelligence</sub></div>
   <div style="display:flex;align-items:center;gap:10px;">
-    <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v2.0.9</span>
+    <span style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);">v2.0.10</span>
     <div class="db-pill" id="db-pill">loading…</div>
   </div>
 </header>
@@ -435,14 +435,14 @@ async function loadAcData() {
     var allRes = await Promise.all([
       fetch(SUPA_URL+"/rest/v1/distinct_customers?order=customer.asc", {headers:{"apikey":SUPA_KEY,"Authorization":"Bearer "+SUPA_KEY}}),
       fetch(SUPA_URL+"/rest/v1/distinct_emails?order=email.asc", {headers:{"apikey":SUPA_KEY,"Authorization":"Bearer "+SUPA_KEY}}),
-      fetch(SUPA_URL+"/rest/v1/distinct_manufacturers?order=manufacturer.asc", {headers:{"apikey":SUPA_KEY,"Authorization":"Bearer "+SUPA_KEY}})
+      api("demand", {query:"?select=manufacturer&manufacturer=not.is.null&manufacturer=neq.&order=manufacturer.asc&limit=500"})
     ]);
     var custData = await allRes[0].json();
     var emailData = await allRes[1].json();
     var mfrData = await allRes[2].json();
     acCache.customers = custData.map(function(r){return r.customer;}).filter(Boolean).sort();
     acCache.emails = emailData.map(function(r){return r.email;}).filter(Boolean).sort();
-    acCache.manufacturers = mfrData.map(function(r){return r.manufacturer;}).filter(Boolean).sort();
+    acCache.manufacturers = Array.from(new Set(mfrData.map(function(r){return r.manufacturer;}).filter(Boolean))).sort();
   } catch(e) {}
 }
 
